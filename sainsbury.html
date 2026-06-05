@@ -871,7 +871,7 @@
         const file = new File([blob], 'sainsbury-barcode.png', { type: 'image/png' });
         await navigator.share({
           files: [file],
-          title: prodName,
+          title: `${prodName} — ${priceText}`,
           text:  `${prodName} — ${priceText}`,
         });
       } catch (e) {
