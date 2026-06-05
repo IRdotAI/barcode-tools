@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode & 2D Code Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-input: #1a1a26;
+      --border: #2a2a3a;
+      --border-focus: #6c5ce7;
+      --text-primary: #e8e8f0;
+      --text-secondary: #8888a0;
+      --text-muted: #55556a;
+      --accent: #6c5ce7;
+      --accent-hover: #7d6ff0;
+      --accent-glow: rgba(108, 92, 231, 0.25);
+      --success: #00cec9;
+      --danger: #ff6b6b;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -40%;
+      left: -20%;
+      width: 60%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(108, 92, 231, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -40%;
+      right: -20%;
+      width: 60%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(0, 206, 201, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    /* Back button */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    /* Upload Section */
+    .upload-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      background: rgba(108, 92, 231, 0.08);
+      border: 2px dashed rgba(108, 92, 231, 0.4);
+      border-radius: var(--radius);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .upload-btn:hover {
+      background: rgba(108, 92, 231, 0.15);
+      border-color: var(--accent);
+    }
+
+    #cameraContainer {
+      margin-top: 16px;
+    }
+
+    #cameraReader {
+      width: 100%;
+      min-height: 280px;
+      background: #000;
+    }
+
+    #cameraReader video {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
+    }
+
+    #cameraReader img {
+      display: none;
+    }
+
+    .camera-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .close-crop-btn {
+      position: absolute; 
+      top: 10px; 
+      right: 10px; 
+      z-index: 10; 
+      width: 32px; 
+      height: 32px; 
+      border-radius: 50%; 
+      background: rgba(10, 10, 15, 0.8); 
+      color: var(--danger); 
+      border: 1px solid var(--danger); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      transition: all 0.2s;
+    }
+    
+    .close-crop-btn:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .divider span {
+      padding: 0 14px;
+    }
+
+    /* Input Group */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: 'Inter', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      outline: none;
+      transition: all 0.25s ease;
+      text-align: center;
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      font-size: 14px;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    input[type="text"].error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+    }
+
+    .info-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .info-text.error-text {
+      color: var(--danger);
+    }
+
+    .info-text.success-text {
+      color: var(--success);
+    }
+
+    /* Results section */
+    .results {
+      display: none;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .results.visible {
+      display: block;
+    }
+
+    .generic-value {
+      font-family: 'Inter', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text-primary);
+      word-break: break-all;
+      padding: 16px;
+      background: var(--bg-input);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .generic-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .generic-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 20px;
+    }
+
+    /* Example section */
+    .example-strip {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .example-seg {
+      padding: 14px 0;
+      text-align: center;
+      font-family: 'Inter', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-right: 1px solid var(--border);
+    }
+
+    .example-seg:last-child {
+      border-right: none;
+    }
+
+    .ex-prefix {
+      flex: 2;
+      background: rgba(108, 92, 231, 0.08);
+      color: var(--accent);
+    }
+
+    .ex-issuer {
+      flex: 6;
+      background: rgba(0, 206, 201, 0.06);
+      color: var(--success);
+    }
+
+    .ex-offer {
+      flex: 3;
+      background: rgba(253, 203, 110, 0.06);
+      color: #fdcb6e;
+    }
+
+    .ex-value {
+      flex: 3;
+      background: rgba(85, 239, 196, 0.06);
+      color: #55efc4;
+    }
+
+    .ex-check {
+      flex: 1.5;
+      background: rgba(255, 107, 107, 0.06);
+      color: var(--danger);
+    }
+
+    .main-nav a:hover {
+      background: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+    }
+
+    .ex-invalid {
+      background: rgba(255, 107, 107, 0.15);
+      color: var(--danger);
+    }
+
+    .example-labels {
+      display: flex;
+      margin-top: 6px;
+    }
+
+    .example-label {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .el-prefix {
+      flex: 2;
+    }
+
+    .el-issuer {
+      flex: 6;
+    }
+
+    .el-offer {
+      flex: 3;
+    }
+
+    .el-value {
+      flex: 3;
+    }
+
+    .el-check {
+      flex: 1.5;
+    }
+
+    /* Details table */
+    .details {
+      margin-top: 24px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-badge {
+      min-width: 76px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-family: 'Inter', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+
+    .badge-prefix {
+      background: rgba(108, 92, 231, 0.15);
+      color: var(--accent);
+    }
+
+    .badge-issuer {
+      background: rgba(0, 206, 201, 0.12);
+      color: var(--success);
+    }
+
+    .badge-offer {
+      background: rgba(253, 203, 110, 0.12);
+      color: #fdcb6e;
+    }
+
+    .badge-value {
+      background: rgba(85, 239, 196, 0.12);
+      color: #55efc4;
+    }
+
+    .badge-check {
+      background: rgba(255, 107, 107, 0.12);
+      color: var(--danger);
+    }
+
+    .badge-valid {
+      background: rgba(0, 206, 201, 0.15);
+      color: var(--success);
+    }
+
+    .detail-content {
+      flex: 1;
+    }
+
+    .detail-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .detail-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .detail-desc strong {
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        max-width: 100%;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .example-strip {
+        flex-direction: column;
+      }
+
+      .example-seg {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 16px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      .example-labels {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <a href="generators.html" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+      </svg>
+      Back to Generator
+    </a>
+
+    <div class="header">
+      <h1>Barcode Reader</h1>
+      <p>Scan EAN-13 coupons, Aztec codes, QR codes, and other barcodes — coupon details shown for EAN-13</p>
+    </div>
+
+    <!-- Input Card -->
+    <div class="card">
+      <div class="upload-section">
+        <div style="display: flex; gap: 10px;">
+          <label for="imageUpload" class="upload-btn" style="flex: 1; margin: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Upload Image
+          </label>
+          <button id="btnCameraScan" class="upload-btn" style="flex: 1; margin: 0; font-family: 'Inter', sans-serif;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            Scan with Camera
+          </button>
+        </div>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+        <div id="cropContainer" style="display: none; margin-top: 16px; position: relative;">
+          <button id="btnCloseCrop" class="close-crop-btn" aria-label="Remove image">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <div style="max-height: 300px; width: 100%; overflow: hidden; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-input);">
+            <img id="imageToCrop" style="max-width: 100%; display: block;">
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <button id="btnCancelCrop" style="flex: 1; padding: 12px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; transition: background 0.2s;">Cancel</button>
+            <button id="btnScanCrop" style="flex: 2; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; transition: background 0.2s;">Scan Selection</button>
+          </div>
+        </div>
+        
+        <div id="cameraContainer" style="display: none; margin-top: 16px;">
+          <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #000;">
+            <div id="cameraReader"></div>
+          </div>
+          <p class="camera-hint" id="cameraHint">Hold the barcode or 2D code inside the highlighted box.</p>
+          <button id="btnStopCamera" style="margin-top: 12px; width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.1); color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: var(--radius); cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; transition: all 0.2s;">Stop Camera</button>
+        </div>
+      </div>
+
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <div class="input-group">
+        <label>Enter 13-digit Barcode</label>
+        <input type="text" id="barcodeInput" placeholder="e.g. 9912345678909" maxlength="13" autocomplete="off">
+        <div class="info-text" id="infoText">
+          <span>Waiting for 13 numeric digits</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="card results" id="resultsSection">
+      <div class="card-title">Breakdown Analysis</div>
+
+      <div class="example-strip">
+        <div class="example-seg ex-prefix" id="resPrefix">--</div>
+        <div class="example-seg ex-issuer" id="resIssuer">----</div>
+        <div class="example-seg ex-offer" id="resOffer">---</div>
+        <div class="example-seg ex-value" id="resValue">---</div>
+        <div class="example-seg ex-check" id="resCheck">-</div>
+      </div>
+      <div class="example-labels">
+        <div class="example-label el-prefix">Prefix</div>
+        <div class="example-label el-issuer">Issuer Code</div>
+        <div class="example-label el-offer">Offer Ref</div>
+        <div class="example-label el-value">Value</div>
+        <div class="example-label el-check">Check</div>
+      </div>
+
+      <div class="details">
+        <div class="detail-row">
+          <div class="detail-badge badge-prefix" id="badgePrefix">--</div>
+          <div class="detail-content">
+            <div class="detail-title">Prefix</div>
+            <div class="detail-desc" id="descPrefix">Waiting for input...</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-issuer" id="badgeIssuer">----</div>
+          <div class="detail-content">
+            <div class="detail-title">Issuer Code</div>
+            <div class="detail-desc" id="descIssuer">Waiting for input...</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-offer" id="badgeOffer">---</div>
+          <div class="detail-content">
+            <div class="detail-title">Offer Reference</div>
+            <div class="detail-desc" id="descOffer">Waiting for input...</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-value" id="badgeValue">---</div>
+          <div class="detail-content">
+            <div class="detail-title">Value</div>
+            <div class="detail-desc" id="descValue">Waiting for input...</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-check" id="badgeCheck">-</div>
+          <div class="detail-content">
+            <div class="detail-title">Check Digit Validation</div>
+            <div class="detail-desc" id="descCheck">Waiting for input...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code 128C Coupon Breakdown -->
+    <div class="card results" id="c128cSection">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <div class="card-title" style="margin-bottom:0;">Code 128C Breakdown</div>
+        <span style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;background:rgba(253,203,110,0.15);color:#fdcb6e;">🏷 Coupon</span>
+      </div>
+
+      <!-- segment strip -->
+      <div class="example-strip" id="c128cStrip">
+        <!-- filled dynamically -->
+      </div>
+      <div class="example-labels" id="c128cLabels" style="display:flex;margin-top:6px;">
+        <!-- filled dynamically -->
+      </div>
+
+      <!-- detail rows -->
+      <div class="details" id="c128cDetails">
+        <!-- filled dynamically -->
+      </div>
+    </div>
+
+    <div class="card results" id="genericResult">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+        <div class="card-title" style="margin-bottom:0;">Scanned Result</div>
+        <span id="genericTypeBadge" style="padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; background:rgba(108,92,231,0.15); color:var(--accent);">—</span>
+      </div>
+      <div class="generic-value" id="genericValue">—</div>
+      <div style="margin-bottom:14px;">
+        <span id="genericSymbology" style="font-size:12px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">—</span>
+      </div>
+      <div id="classifyCard" style="background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius); padding:16px;">
+        <div style="font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:6px;" id="classifyTitle">—</div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;" id="classifyDesc">—</div>
+      </div>
+      <div id="classifyDetails" style="margin-top:12px;"></div>
+    </div>
+    <div id="readerHidden" style="display: none;"></div>
+  </div>
+
+  <script>
+    function calculateCheckDigit(digits12) {
+      if (digits12.length !== 12 || !/^\d{12}$/.test(digits12)) return null;
+      let sum = 0;
+      for (let i = 0; i < 12; i++) {
+        const d = parseInt(digits12[i], 10);
+        sum += (i % 2 === 0) ? d : d * 3;
+      }
+      const remainder = sum % 10;
+      return remainder === 0 ? 0 : 10 - remainder;
+    }
+
+    const input = document.getElementById('barcodeInput');
+    const infoText = document.getElementById('infoText');
+    const resultsSection = document.getElementById('resultsSection');
+    const genericResult = document.getElementById('genericResult');
+    const genericValue = document.getElementById('genericValue');
+    const genericFormat = document.getElementById('genericFormat');
+    const imageUpload = document.getElementById('imageUpload');
+    let inputMode = 'ean';
+
+    // UI Elements
+    const resPrefix = document.getElementById('resPrefix');
+    const resIssuer = document.getElementById('resIssuer');
+    const resOffer = document.getElementById('resOffer');
+    const resValue = document.getElementById('resValue');
+    const resCheck = document.getElementById('resCheck');
+
+    const badgePrefix = document.getElementById('badgePrefix');
+    const badgeIssuer = document.getElementById('badgeIssuer');
+    const badgeOffer = document.getElementById('badgeOffer');
+    const badgeValue = document.getElementById('badgeValue');
+    const badgeCheck = document.getElementById('badgeCheck');
+
+    const descPrefix = document.getElementById('descPrefix');
+    const descIssuer = document.getElementById('descIssuer');
+    const descOffer = document.getElementById('descOffer');
+    const descValue = document.getElementById('descValue');
+    const descCheck = document.getElementById('descCheck');
+
+    function setEanInputMode() {
+      inputMode = 'ean';
+      input.setAttribute('maxlength', '13');
+      input.placeholder = 'e.g. 9912345678909';
+      input.value = '';
+      input.classList.remove('error');
+    }
+
+    function setGenericInputMode() {
+      inputMode = 'generic';
+      input.removeAttribute('maxlength');
+      input.placeholder = 'Scanned barcode value';
+    }
+
+    // "Clear / scan again" button that appears after any non-EAN scan
+    const clearBtn = document.createElement('button');
+    clearBtn.id = 'btnClearResult';
+    clearBtn.textContent = '✕ Clear & scan another';
+    clearBtn.style.cssText = 'margin-top:14px; width:100%; padding:10px; background:rgba(108,92,231,0.08); color:var(--accent); border:1px solid rgba(108,92,231,0.3); border-radius:var(--radius); cursor:pointer; font-family:"Inter",sans-serif; font-weight:600; font-size:13px; transition:all 0.2s; display:none;';
+    clearBtn.addEventListener('mouseover', () => { clearBtn.style.background = 'rgba(108,92,231,0.18)'; });
+    clearBtn.addEventListener('mouseout',  () => { clearBtn.style.background = 'rgba(108,92,231,0.08)'; });
+    clearBtn.addEventListener('click', () => {
+      genericResult.classList.remove('visible');
+      resultsSection.classList.remove('visible');
+      document.getElementById('c128cSection').classList.remove('visible');
+      clearBtn.style.display = 'none';
+      setEanInputMode();
+      infoText.innerHTML = '<span>Waiting for 13 numeric digits</span>';
+      infoText.className = 'info-text';
+      input.focus();
+    });
+    // Insert after the infoText div inside the card
+    document.getElementById('infoText').insertAdjacentElement('afterend', clearBtn);
+
+    input.addEventListener('input', (e) => {
+      if (inputMode === 'generic') {
+        const val = e.target.value.trim().slice(0, 128);
+        e.target.value = val;
+        if (val.length === 0) {
+          // User cleared it — go back to EAN mode
+          genericResult.classList.remove('visible');
+          resultsSection.classList.remove('visible');
+          document.getElementById('c128cSection').classList.remove('visible');
+          document.getElementById('btnClearResult').style.display = 'none';
+          setEanInputMode();
+          infoText.innerHTML = '<span>Waiting for 13 numeric digits</span>';
+          infoText.className = 'info-text';
+        } else {
+          genericResult.classList.remove('visible');
+          resultsSection.classList.remove('visible');
+          // If it looks like a Code 128C barcode, show the breakdown too
+          if (isCode128C(val, 'CODE128')) {
+            showGenericBarcode(val, 'CODE128');
+            analyzeCode128C(val);
+          } else {
+            showGenericBarcode(val, '');
+          }
+        }
+        return;
+      }
+
+      let val = e.target.value.replace(/\D/g, '').slice(0, 13);
+      e.target.value = val;
+      genericResult.classList.remove('visible');
+
+      if (val.length === 13) {
+        input.classList.remove('error');
+        analyzeBarcode(val);
+      } else {
+        resultsSection.classList.remove('visible');
+        if (val.length > 0) {
+          infoText.innerHTML = `<span>${val.length}/13 digits entered</span>`;
+          infoText.className = 'info-text';
+        } else {
+          infoText.innerHTML = `<span>Waiting for 13 numeric digits</span>`;
+          infoText.className = 'info-text';
+        }
+      }
+    });
+
+    // ── Scanner config — ALL supported formats ────────────────────────────────
+    // Passing no formatsToSupport (or undefined) makes the library scan every
+    // format it knows: QR, Aztec, Codabar, Code39, Code93, Code128, DataMatrix,
+    // MaxiCode, ITF, EAN-13, EAN-8, PDF417, RSS14, RSS Expanded, UPC-A, UPC-E,
+    // UPC/EAN Extension.
+    const scannerCreateConfig = {
+      // formatsToSupport intentionally omitted → scans ALL 17 formats
+      useBarCodeDetectorIfSupported: false,
+      verbose: false
+    };
+
+    // Adaptive scan box: wide+short for 1D barcodes, square for 2D codes.
+    // We start square (works for both) and the classifier hint can't arrive
+    // before a scan, so we keep it square — it covers everything.
+    const cameraScanConfig = {
+      fps: 15,
+      qrbox: (viewWidth, viewHeight) => {
+        const w = Math.floor(Math.min(viewWidth  * 0.92, 520));
+        const h = Math.floor(Math.min(viewHeight * 0.55, 300));
+        // Use a square that fits inside both dims — good for 2D; 1D barcodes
+        // are wide enough to be caught even in a square box
+        return { width: w, height: h };
+      },
+      aspectRatio: 1.777778
+    };
+
+    function normalizeScannedBarcode(raw) {
+      let digits = String(raw).replace(/\D/g, '');
+      if (digits.length === 12) {
+        digits += String(calculateCheckDigit(digits));
+      }
+      if (digits.length > 13) {
+        digits = digits.slice(0, 13);
+      }
+      return digits;
+    }
+
+    function formatLabelFromResult(decodedResult) {
+      if (!decodedResult || !decodedResult.result) return '';
+      const f = decodedResult.result.format;
+      if (typeof f === 'string') return f;
+      if (f && f.formatName) return f.formatName;
+      return '';
+    }
+
+    // ── Classification engine — covers all 17 html5-qrcode formats ───────────
+
+    function classifyBarcode(value, symbology) {
+      const v   = String(value).trim();
+      const sym = (symbology || '').toUpperCase().replace(/[_\-\s]/g, '');
+      const digits      = v.replace(/\D/g, '');
+      const isAllDigits = /^\d+$/.test(v);
+      const len         = v.length;
+      const dlen        = digits.length;
+
+      // Helper: GS1 country from 3-digit prefix
+      function gs1Country(p3) {
+        const n = parseInt(p3, 10);
+        if (n >= 0   && n <= 19)  return '🇺🇸 US / Canada';
+        if (n >= 20  && n <= 29)  return '🔵 In-store / restricted';
+        if (n >= 30  && n <= 39)  return '🇺🇸 US drugs (NDC)';
+        if (n >= 40  && n <= 49)  return '🇺🇸 US / Canada (reserved)';
+        if (n >= 50  && n <= 59)  return '🇺🇸 US coupons';
+        if (n >= 60  && n <= 99)  return '🇺🇸 US / Canada';
+        if (n >= 100 && n <= 139) return '🇺🇸 US';
+        if (n >= 200 && n <= 299) return '⚖️ Variable-weight / in-store';
+        if (n >= 300 && n <= 379) return '🇫🇷 France / Monaco';
+        if (n >= 380 && n <= 380) return '🇧🇬 Bulgaria';
+        if (n >= 383 && n <= 383) return '🇸🇮 Slovenia';
+        if (n >= 385 && n <= 385) return '🇭🇷 Croatia';
+        if (n >= 387 && n <= 387) return '🇧🇦 Bosnia-Herzegovina';
+        if (n >= 389 && n <= 389) return '🇲🇪 Montenegro';
+        if (n >= 400 && n <= 440) return '🇩🇪 Germany';
+        if (n >= 450 && n <= 459) return '🇯🇵 Japan';
+        if (n >= 460 && n <= 469) return '🇷🇺 Russia';
+        if (n >= 470 && n <= 470) return '🇰🇬 Kyrgyzstan';
+        if (n >= 471 && n <= 471) return '🇹🇼 Taiwan';
+        if (n >= 474 && n <= 474) return '🇪🇪 Estonia';
+        if (n >= 475 && n <= 475) return '🇱🇻 Latvia';
+        if (n >= 476 && n <= 476) return '🇦🇿 Azerbaijan';
+        if (n >= 477 && n <= 477) return '🇱🇹 Lithuania';
+        if (n >= 478 && n <= 478) return '🇺🇿 Uzbekistan';
+        if (n >= 479 && n <= 479) return '🇱🇰 Sri Lanka';
+        if (n >= 480 && n <= 480) return '🇵🇭 Philippines';
+        if (n >= 481 && n <= 481) return '🇧🇾 Belarus';
+        if (n >= 482 && n <= 482) return '🇺🇦 Ukraine';
+        if (n >= 484 && n <= 484) return '🇲🇩 Moldova';
+        if (n >= 485 && n <= 485) return '🇦🇲 Armenia';
+        if (n >= 486 && n <= 486) return '🇬🇪 Georgia';
+        if (n >= 487 && n <= 487) return '🇰🇿 Kazakhstan';
+        if (n >= 488 && n <= 488) return '🇹🇯 Tajikistan';
+        if (n >= 489 && n <= 489) return '🇭🇰 Hong Kong';
+        if (n >= 490 && n <= 499) return '🇯🇵 Japan';
+        if (n >= 500 && n <= 509) return '🇬🇧 United Kingdom';
+        if (n >= 520 && n <= 521) return '🇬🇷 Greece';
+        if (n >= 528 && n <= 528) return '🇱🇧 Lebanon';
+        if (n >= 529 && n <= 529) return '🇨🇾 Cyprus';
+        if (n >= 530 && n <= 530) return '🇦🇱 Albania';
+        if (n >= 531 && n <= 531) return '🇲🇰 North Macedonia';
+        if (n >= 535 && n <= 535) return '🇲🇹 Malta';
+        if (n >= 539 && n <= 539) return '🇮🇪 Ireland';
+        if (n >= 540 && n <= 549) return '🇧🇪 Belgium / Luxembourg';
+        if (n >= 560 && n <= 560) return '🇵🇹 Portugal';
+        if (n >= 569 && n <= 569) return '🇮🇸 Iceland';
+        if (n >= 570 && n <= 579) return '🇩🇰 Denmark / Faroe Islands';
+        if (n >= 590 && n <= 590) return '🇵🇱 Poland';
+        if (n >= 594 && n <= 594) return '🇷🇴 Romania';
+        if (n >= 599 && n <= 599) return '🇭🇺 Hungary';
+        if (n >= 600 && n <= 601) return '🇿🇦 South Africa';
+        if (n >= 603 && n <= 603) return '🇬🇭 Ghana';
+        if (n >= 604 && n <= 604) return '🇸🇳 Senegal';
+        if (n >= 608 && n <= 608) return '🇧🇭 Bahrain';
+        if (n >= 609 && n <= 609) return '🇲🇺 Mauritius';
+        if (n >= 611 && n <= 611) return '🇲🇦 Morocco';
+        if (n >= 613 && n <= 613) return '🇩🇿 Algeria';
+        if (n >= 615 && n <= 615) return '🇳🇬 Nigeria';
+        if (n >= 616 && n <= 616) return '🇰🇪 Kenya';
+        if (n >= 617 && n <= 617) return '🇨🇲 Cameroon';
+        if (n >= 618 && n <= 618) return '🇨🇮 Ivory Coast';
+        if (n >= 619 && n <= 619) return '🇹🇳 Tunisia';
+        if (n >= 621 && n <= 621) return '🇸🇾 Syria';
+        if (n >= 622 && n <= 622) return '🇪🇬 Egypt';
+        if (n >= 624 && n <= 624) return '🇱🇾 Libya';
+        if (n >= 625 && n <= 625) return '🇯🇴 Jordan';
+        if (n >= 626 && n <= 626) return '🇮🇷 Iran';
+        if (n >= 627 && n <= 627) return '🇰🇼 Kuwait';
+        if (n >= 628 && n <= 628) return '🇸🇦 Saudi Arabia';
+        if (n >= 629 && n <= 629) return '🇦🇪 UAE';
+        if (n >= 640 && n <= 649) return '🇫🇮 Finland';
+        if (n >= 690 && n <= 699) return '🇨🇳 China';
+        if (n >= 700 && n <= 709) return '🇳🇴 Norway';
+        if (n >= 729 && n <= 729) return '🇮🇱 Israel';
+        if (n >= 730 && n <= 739) return '🇸🇪 Sweden';
+        if (n >= 740 && n <= 740) return '🇬🇹 Guatemala';
+        if (n >= 741 && n <= 741) return '🇸🇻 El Salvador';
+        if (n >= 742 && n <= 742) return '🇭🇳 Honduras';
+        if (n >= 743 && n <= 743) return '🇳🇮 Nicaragua';
+        if (n >= 744 && n <= 744) return '🇨🇷 Costa Rica';
+        if (n >= 745 && n <= 745) return '🇵🇦 Panama';
+        if (n >= 746 && n <= 746) return '🇩🇴 Dominican Republic';
+        if (n >= 750 && n <= 750) return '🇲🇽 Mexico';
+        if (n >= 754 && n <= 755) return '🇨🇦 Canada';
+        if (n >= 759 && n <= 759) return '🇻🇪 Venezuela';
+        if (n >= 760 && n <= 769) return '🇨🇭 Switzerland / Liechtenstein';
+        if (n >= 770 && n <= 771) return '🇨🇴 Colombia';
+        if (n >= 773 && n <= 773) return '🇺🇾 Uruguay';
+        if (n >= 775 && n <= 775) return '🇵🇪 Peru';
+        if (n >= 777 && n <= 777) return '🇧🇴 Bolivia';
+        if (n >= 778 && n <= 779) return '🇦🇷 Argentina';
+        if (n >= 780 && n <= 780) return '🇨🇱 Chile';
+        if (n >= 784 && n <= 784) return '🇵🇾 Paraguay';
+        if (n >= 786 && n <= 786) return '🇪🇨 Ecuador';
+        if (n >= 789 && n <= 790) return '🇧🇷 Brazil';
+        if (n >= 800 && n <= 839) return '🇮🇹 Italy';
+        if (n >= 840 && n <= 849) return '🇪🇸 Spain';
+        if (n >= 850 && n <= 850) return '🇨🇺 Cuba';
+        if (n >= 858 && n <= 858) return '🇸🇰 Slovakia';
+        if (n >= 859 && n <= 859) return '🇨🇿 Czech Republic';
+        if (n >= 860 && n <= 860) return '🇷🇸 Serbia';
+        if (n >= 865 && n <= 865) return '🇲🇳 Mongolia';
+        if (n >= 867 && n <= 867) return '🇰🇵 North Korea';
+        if (n >= 868 && n <= 869) return '🇹🇷 Turkey';
+        if (n >= 870 && n <= 879) return '🇳🇱 Netherlands';
+        if (n >= 880 && n <= 880) return '🇰🇷 South Korea';
+        if (n >= 884 && n <= 884) return '🇰🇭 Cambodia';
+        if (n >= 885 && n <= 885) return '🇹🇭 Thailand';
+        if (n >= 888 && n <= 888) return '🇸🇬 Singapore';
+        if (n >= 890 && n <= 890) return '🇮🇳 India';
+        if (n >= 893 && n <= 893) return '🇻🇳 Vietnam';
+        if (n >= 896 && n <= 896) return '🇵🇰 Pakistan';
+        if (n >= 899 && n <= 899) return '🇮🇩 Indonesia';
+        if (n >= 900 && n <= 919) return '🇦🇹 Austria';
+        if (n >= 930 && n <= 939) return '🇦🇺 Australia';
+        if (n >= 940 && n <= 949) return '🇳🇿 New Zealand';
+        if (n >= 950 && n <= 950) return '🌐 GS1 Global Office';
+        if (n >= 955 && n <= 955) return '🇲🇾 Malaysia';
+        if (n >= 958 && n <= 958) return '🇲🇴 Macau';
+        if (n >= 960 && n <= 969) return '🌐 GS1 UK (global use)';
+        if (n >= 977 && n <= 977) return '📰 ISSN (serials/magazines)';
+        if (n >= 978 && n <= 979) return '📚 ISBN (books)';
+        if (n >= 980 && n <= 980) return '💳 Refund receipts';
+        if (n >= 981 && n <= 984) return '💱 Common currency coupons';
+        if (n >= 990 && n <= 999) return '🏷 Coupons';
+        return '';
+      }
+
+      // ── QR Code ───────────────────────────────────────────────────────────────
+      if (sym === 'QRCODE' || sym === 'QR') {
+        if (/^https?:\/\//i.test(v))     return { type:'QR Code — URL',      badge:'🔗 URL',      color:'#00cec9', title:'Website / URL',             desc:`This QR code links to: <strong>${v}</strong>`,               details:[{label:'Open', value:`<a href="${v}" target="_blank" rel="noopener" style="color:var(--accent)">${v}</a>`}] };
+        if (/^mailto:/i.test(v))         return { type:'QR Code — Email',    badge:'✉️ Email',    color:'#fdcb6e', title:'Email address',             desc:`Encodes an email: <strong>${v.replace(/^mailto:/i,'')}</strong>` };
+        if (/^tel:/i.test(v))            return { type:'QR Code — Phone',    badge:'📞 Phone',    color:'#55efc4', title:'Phone number',              desc:`Phone: <strong>${v.replace(/^tel:/i,'')}</strong>` };
+        if (/^smsto?:/i.test(v))         return { type:'QR Code — SMS',      badge:'💬 SMS',      color:'#a29bfe', title:'SMS message',               desc:`Scan to send SMS. Content: <strong>${v}</strong>` };
+        if (/^BEGIN:VCARD/i.test(v))     return { type:'QR Code — Contact',  badge:'👤 vCard',    color:'#74b9ff', title:'Contact card (vCard)',       desc:'Scan with your phone camera to save a contact.' };
+        if (/^BEGIN:VEVENT/i.test(v))    return { type:'QR Code — Calendar', badge:'📅 Event',    color:'#fd79a8', title:'Calendar event (vEvent)',    desc:'Scan with your phone camera to add this event to your calendar.' };
+        if (/^WIFI:/i.test(v)) {
+          const ssid = (v.match(/S:([^;]+)/) || [])[1] || '?';
+          const enc  = (v.match(/T:([^;]+)/) || [])[1] || '?';
+          return { type:'QR Code — Wi-Fi', badge:'📶 Wi-Fi', color:'#00cec9', title:`Wi-Fi: ${ssid}`, desc:`Encryption: <strong>${enc}</strong>. Scan with your phone to join automatically.` };
+        }
+        if (/^geo:/i.test(v))            return { type:'QR Code — Location', badge:'📍 GPS',      color:'#ff7675', title:'Geographic coordinates',    desc:`Location: <strong>${v.replace(/^geo:/i,'')}</strong>` };
+        if (/^bitcoin:/i.test(v))        return { type:'QR Code — Bitcoin',  badge:'₿ Bitcoin',   color:'#fdcb6e', title:'Bitcoin payment address',   desc:`Address: <strong>${v}</strong>` };
+        if (/^otpauth:/i.test(v))        return { type:'QR Code — 2FA',      badge:'🔐 2FA',      color:'#a29bfe', title:'Two-factor auth (OTP) key', desc:`Scan with an authenticator app (e.g. Google Authenticator).` };
+        if (isAllDigits && dlen >= 10)   return { type:'QR Code — Numeric',  badge:'🔢 QR Num',   color:'#a29bfe', title:'QR Code (numeric only)',    desc:`Numeric payload: <strong>${v}</strong>` };
+        return                                  { type:'QR Code',            badge:'QR',          color:'#a29bfe', title:'QR Code (text / other)',    desc:`Content: <strong>${v}</strong>` };
+      }
+
+      // ── Aztec ────────────────────────────────────────────────────────────────
+      if (sym === 'AZTEC') {
+        if (/^https?:\/\//i.test(v))  return { type:'Aztec — URL',        badge:'🔗 Aztec URL', color:'#00cec9', title:'Website / URL (Aztec)',       desc:`Links to: <strong>${v}</strong>`, details:[{label:'Open', value:`<a href="${v}" target="_blank" rel="noopener" style="color:var(--accent)">${v}</a>`}] };
+        if (/^BEGIN:VCARD/i.test(v))  return { type:'Aztec — Contact',    badge:'👤 Aztec',     color:'#74b9ff', title:'Contact card (Aztec)',         desc:'Scan with your phone camera to save a contact.' };
+        if (/^\d{9,}$/.test(v))       return { type:'Aztec — Ticket',     badge:'🎟 Aztec',     color:'#fd79a8', title:'Ticket / boarding pass (Aztec)', desc:`Numeric payload: <strong>${v}</strong>. Common for transit tickets, event passes, and boarding passes.` };
+        return                               { type:'Aztec Code',         badge:'Aztec',        color:'#a29bfe', title:'Aztec Code',                  desc:`2D matrix format used for transport tickets and boarding passes. Content: <strong>${v}</strong>` };
+      }
+
+      // ── Data Matrix ──────────────────────────────────────────────────────────
+      if (sym === 'DATAMATRIX') {
+        if (/^\d{20,}$/.test(v))      return { type:'Data Matrix — Serial', badge:'🏭 DataMatrix', color:'#636e72', title:'Data Matrix (serialised item)', desc:`Long numeric payload — likely a serialised product, part number, or GS1 DataMatrix. Value: <strong>${v}</strong>` };
+        if (/^\(/.test(v))            return { type:'Data Matrix — GS1',    badge:'📦 GS1 DM',    color:'#00cec9', title:'GS1 Data Matrix',              desc:`GS1 Application Identifiers detected. Used in pharmaceutical, healthcare, and food packaging. Value: <strong>${v}</strong>` };
+        return                               { type:'Data Matrix',           badge:'DataMatrix',   color:'#636e72', title:'Data Matrix code',             desc:`2D matrix barcode used on small parts, pharma packaging, and postal services. Content: <strong>${v}</strong>` };
+      }
+
+      // ── MaxiCode ─────────────────────────────────────────────────────────────
+      if (sym === 'MAXICODE') {
+        return { type:'MaxiCode', badge:'MaxiCode', color:'#636e72', title:'MaxiCode barcode', desc:`Used by UPS on parcel labels for high-speed sorting. Content: <strong>${v}</strong>` };
+      }
+
+      // ── PDF 417 ──────────────────────────────────────────────────────────────
+      if (sym === 'PDF417') {
+        if (len > 100) return { type:'PDF 417 — ID Document', badge:'🪪 PDF417', color:'#b2bec3', title:'ID document / driving licence (PDF 417)', desc:`Large PDF 417 payload — likely a driving licence, ID card, or boarding pass.` };
+        return               { type:'PDF 417',                badge:'PDF417',   color:'#b2bec3', title:'PDF 417 barcode',                         desc:`2D stacked barcode used on driving licences, boarding passes, and ID documents. Content: <strong>${v}</strong>` };
+      }
+
+      // ── RSS 14 (GS1 DataBar) ─────────────────────────────────────────────────
+      if (sym === 'RSS14' || sym === 'GS1DATABAR') {
+        return { type:'GS1 DataBar (RSS-14)', badge:'GS1 DataBar', color:'#fdcb6e', title:'GS1 DataBar / RSS-14', desc:`Used on small items like fresh produce and coupons where EAN-13 doesn't fit. Value: <strong>${v}</strong>` };
+      }
+
+      // ── RSS Expanded (GS1 DataBar Expanded) ──────────────────────────────────
+      if (sym === 'RSSEXPANDED' || sym === 'GS1DATABAREXPANDED') {
+        return { type:'GS1 DataBar Expanded', badge:'GS1 DBE', color:'#fdcb6e', title:'GS1 DataBar Expanded', desc:`Carries additional product data like weight, lot, and best-before date. Used in grocery and healthcare. Value: <strong>${v}</strong>` };
+      }
+
+      // ── UPC/EAN Extension ────────────────────────────────────────────────────
+      if (sym === 'UPCEANEXTENSION') {
+        return { type:'UPC/EAN Extension', badge:'EAN Ext', color:'#b2bec3', title:'UPC/EAN Extension (2 or 5 digit)', desc:`Add-on code used on magazines (issue number) and books (price). Value: <strong>${v}</strong>` };
+      }
+
+      // ── EAN-8 ────────────────────────────────────────────────────────────────
+      if (sym === 'EAN8' || (sym === '' && isAllDigits && dlen === 8)) {
+        return { type:'EAN-8', badge:'EAN-8', color:'#fdcb6e', title:'EAN-8 product barcode', desc:`Short EAN barcode used on small consumer goods where a full EAN-13 doesn't fit. Value: <strong>${v}</strong>` };
+      }
+
+      // ── UPC-E ────────────────────────────────────────────────────────────────
+      if (sym === 'UPCE' || (sym === '' && isAllDigits && dlen === 6)) {
+        return { type:'UPC-E', badge:'UPC-E', color:'#81ecec', title:'UPC-E (zero-suppressed) barcode', desc:`Compressed UPC barcode for small packaging. Expands to a full 12-digit UPC-A. Value: <strong>${v}</strong>` };
+      }
+
+      // ── UPC-A ────────────────────────────────────────────────────────────────
+      if (sym === 'UPCA' || (sym === '' && isAllDigits && dlen === 12)) {
+        return { type:'UPC-A', badge:'UPC-A', color:'#55efc4', title:'UPC-A product barcode', desc:`Standard 12-digit retail barcode used in North America. Value: <strong>${v}</strong>` };
+      }
+
+      // ── EAN-13 ───────────────────────────────────────────────────────────────
+      if (sym === 'EAN13' || (sym === '' && isAllDigits && dlen === 13)) {
+        const p2 = digits.slice(0,2);
+        const p3 = digits.slice(0,3);
+        if (p2 === '99' || p2 === '98') return { type:'EAN-13 — Coupon',         badge:'🏷 Coupon',        color:'#ff7675', title:'Retail coupon / voucher (EAN-13)',    desc:`Prefix <strong>${p2}</strong> indicates a manufacturer's coupon or in-store voucher.` };
+        if (/^97[89]/.test(p3))  return          { type:'EAN-13 — ISBN/ISSN',    badge:'📚 ISBN/ISSN',     color:'#74b9ff', title:p3==='977'?'ISSN (magazine/serial)':'ISBN (book)', desc:`GS1 prefix <strong>${p3}</strong> — this is a ${p3==='977'?'magazine or serial publication (ISSN)':'book identifier (ISBN)'}. Value: <strong>${v}</strong>` };
+        const country = gs1Country(p3);
+        const countryDesc = country ? ` — GS1 prefix indicates: <strong>${country}</strong>.` : '';
+        if (p3 >= '200' && p3 <= '299') return   { type:'EAN-13 — Variable weight', badge:'⚖️ Variable wt', color:'#fdcb6e', title:'Variable-weight in-store item',       desc:`Prefix 2xx is used for loose items priced by weight (deli, produce, bakery).${countryDesc}` };
+        return                                    { type:'EAN-13 — Product',     badge:'🛒 EAN-13',        color:'#55efc4', title:'Consumer product (EAN-13)',           desc:`13-digit retail barcode.${countryDesc} Value: <strong>${v}</strong>` };
+      }
+
+      // ── ITF (Interleaved 2 of 5) ─────────────────────────────────────────────
+      if (sym === 'ITF') {
+        if (dlen === 14) return { type:'ITF-14',  badge:'ITF-14',  color:'#636e72', title:'Shipping carton / case barcode (ITF-14)', desc:`14-digit barcode used on outer cases and pallets in logistics. Value: <strong>${v}</strong>` };
+        if (dlen === 6)  return { type:'SCC-14 / ITF-6', badge:'ITF-6', color:'#636e72', title:'Short ITF barcode', desc:`6-digit ITF barcode. Used in some warehouse systems. Value: <strong>${v}</strong>` };
+        return                  { type:'ITF',     badge:'ITF',     color:'#636e72', title:'Interleaved 2 of 5 (ITF)',               desc:`Numeric-only barcode used in warehousing and distribution. Value: <strong>${v}</strong>` };
+      }
+
+      // ── Codabar ──────────────────────────────────────────────────────────────
+      if (sym === 'CODABAR') {
+        if (/^[ABCD].*[ABCD]$/i.test(v)) return { type:'Codabar', badge:'Codabar', color:'#b2bec3', title:'Codabar barcode (with start/stop)', desc:`Start/stop characters detected. Used in libraries, blood banks, and FedEx airbills. Value: <strong>${v}</strong>` };
+        return                                   { type:'Codabar', badge:'Codabar', color:'#b2bec3', title:'Codabar barcode',                   desc:`Used in libraries, blood banks, and FedEx airbills. Value: <strong>${v}</strong>` };
+      }
+
+      // ── Code 39 ──────────────────────────────────────────────────────────────
+      if (sym === 'CODE39') {
+        if (/^\*.*\*$/.test(v))                  return { type:'Code 39',          badge:'Code 39',     color:'#a29bfe', title:'Code 39 barcode (with asterisk delimiters)', desc:`Asterisk start/stop present. Used in automotive, defence, and government. Value: <strong>${v.replace(/\*/g,'')}</strong>` };
+        if (/^[A-Z]{2}\d{6,}[A-Z]$/.test(v))    return { type:'Code 39 — Serial', badge:'🔖 Serial',   color:'#a29bfe', title:'Asset / serial number (Code 39)',             desc:`Looks like a serial or asset tag. Value: <strong>${v}</strong>` };
+        return                                          { type:'Code 39',          badge:'Code 39',     color:'#a29bfe', title:'Code 39 barcode',                             desc:`Alphanumeric barcode used in automotive, defence, and government. Value: <strong>${v}</strong>` };
+      }
+
+      // ── Code 93 ──────────────────────────────────────────────────────────────
+      if (sym === 'CODE93') {
+        return { type:'Code 93', badge:'Code 93', color:'#a29bfe', title:'Code 93 barcode', desc:`Compact alphanumeric barcode — similar to Code 39 but denser. Used by Canada Post and some US military applications. Value: <strong>${v}</strong>` };
+      }
+
+      // ── Code 128 ─────────────────────────────────────────────────────────────
+      if (sym === 'CODE128' || sym.includes('GS1') && sym.includes('128')) {
+        if (/^\(00\)/.test(v))                    return { type:'GS1-128 — SSCC',      badge:'📦 SSCC',       color:'#00cec9', title:'Serial Shipping Container Code (GS1-128 AI 00)',  desc:`Application identifier (00) = SSCC pallet/container code. Value: <strong>${v}</strong>` };
+        if (/^\(01\)/.test(v))                    return { type:'GS1-128 — GTIN',      badge:'📦 GTIN',       color:'#00cec9', title:'GTIN product identifier (GS1-128 AI 01)',         desc:`Application identifier (01) = Global Trade Item Number. Value: <strong>${v}</strong>` };
+        if (/^\(10\)/.test(v))                    return { type:'GS1-128 — Batch',     badge:'📦 Batch',      color:'#00cec9', title:'Batch / lot number (GS1-128 AI 10)',              desc:`Application identifier (10) = batch or lot number. Value: <strong>${v}</strong>` };
+        if (/^\(17\)/.test(v))                    return { type:'GS1-128 — Expiry',    badge:'⏱ Expiry',      color:'#fdcb6e', title:'Expiry date encoded (GS1-128 AI 17)',             desc:`Application identifier (17) = expiry date. Value: <strong>${v}</strong>` };
+        if (/^\(21\)/.test(v))                    return { type:'GS1-128 — Serial',    badge:'🔖 Serial',     color:'#00cec9', title:'Serial number (GS1-128 AI 21)',                  desc:`Application identifier (21) = serial number. Value: <strong>${v}</strong>` };
+        if (/^\(420\)|^\(421\)/.test(v))          return { type:'GS1-128 — Postcode',  badge:'📮 Post',       color:'#74b9ff', title:'Postal / ship-to postcode (GS1-128)',             desc:`Application identifier (420/421) = ship-to postcode. Value: <strong>${v}</strong>` };
+        if (/^\(/.test(v))                        return { type:'GS1-128',             badge:'GS1-128',       color:'#00cec9', title:'GS1-128 barcode (Application Identifier)',        desc:`GS1 AI format. Used in supply chain, retail, and healthcare. Value: <strong>${v}</strong>` };
+        // Code 128 subtype heuristics (no AI brackets)
+        if (/^\d{14}$/.test(v))                   return { type:'Code 128 — GTIN-14',  badge:'📦 GTIN-14',    color:'#00cec9', title:'GTIN-14 / shipping barcode (Code 128)',           desc:`14 digits — likely a shipping case GTIN or ITF-14 equivalent. Value: <strong>${v}</strong>` };
+        if (/^\d{12,13}$/.test(v))                return { type:'Code 128 — EAN equiv',badge:'🛒 Code 128',   color:'#55efc4', title:'EAN-equivalent code (Code 128)',                  desc:`Numeric-only Code 128 matching EAN length. Value: <strong>${v}</strong>` };
+        if (/^\d{8,20}$/.test(v) && dlen%2===0)  return { type:'Code 128C — Coupon',  badge:'🏷 Code 128C',  color:'#ff7675', title:'Code 128 subtype C — retail coupon / ticket',     desc:`All-digit even-length payload — characteristic of Code 128C used in retail coupons (e.g. Asda, Tesco). Value: <strong>${v}</strong>` };
+        if (/^[A-Z0-9]{8,24}$/.test(v))          return { type:'Code 128 — Gift card',badge:'🎁 Gift card',  color:'#fd79a8', title:'Gift card or loyalty card (Code 128)',             desc:`Alphanumeric Code 128 of this length is typically a gift card, loyalty card, or membership ID. Value: <strong>${v}</strong>` };
+        if (/^1Z[A-Z0-9]{16}$/.test(v))          return { type:'Code 128 — UPS',      badge:'🚚 UPS',        color:'#fdcb6e', title:'UPS tracking number (Code 128)',                  desc:`Starts with 1Z — standard UPS tracking barcode. Value: <strong>${v}</strong>` };
+        if (/^\d{20,22}$/.test(v))               return { type:'Code 128 — Tracking', badge:'📮 Tracking',   color:'#74b9ff', title:'Postal tracking number (Code 128)',               desc:`Long numeric payload — likely a Royal Mail or courier tracking number. Value: <strong>${v}</strong>` };
+        return                                          { type:'Code 128',             badge:'Code 128',      color:'#a29bfe', title:'Code 128 barcode',                               desc:`High-density alphanumeric barcode used in retail, logistics, and healthcare. Value: <strong>${v}</strong>` };
+      }
+
+      // ── Fallback heuristics when symbology unknown ────────────────────────────
+      if (isAllDigits) {
+        if (dlen === 6)  return { type:'UPC-E (likely)',   badge:'UPC-E',   color:'#81ecec', title:'UPC-E (likely)',       desc:`6-digit numeric — most likely UPC-E compressed barcode.` };
+        if (dlen === 8)  return { type:'EAN-8 (likely)',   badge:'EAN-8',   color:'#fdcb6e', title:'EAN-8 (likely)',       desc:`8-digit numeric — most likely EAN-8 for small consumer goods.` };
+        if (dlen === 12) return { type:'UPC-A (likely)',   badge:'UPC-A',   color:'#55efc4', title:'UPC-A (likely)',       desc:`12-digit numeric — most likely UPC-A North American retail barcode.` };
+        if (dlen === 13) {
+          const c = gs1Country(digits.slice(0,3));
+          return { type:'EAN-13 (likely)', badge:'EAN-13', color:'#55efc4', title:'EAN-13 (likely)', desc:`13-digit numeric — EAN-13 product barcode.${c?' Country/region: <strong>'+c+'</strong>':''} Value: <strong>${v}</strong>` };
+        }
+        if (dlen === 14) return { type:'ITF-14 (likely)',  badge:'ITF-14',  color:'#636e72', title:'ITF-14 (likely)',      desc:`14-digit numeric — likely a shipping carton barcode (ITF-14).` };
+        if (dlen === 18) return { type:'SSCC (likely)',    badge:'📦 SSCC', color:'#636e72', title:'SSCC (18 digits, likely)', desc:`18-digit numeric — likely a Serial Shipping Container Code (pallet label).` };
+        if (dlen >= 15)  return { type:'Long numeric ID',  badge:'Numeric', color:'#b2bec3', title:`${dlen}-digit numeric code`, desc:`Could be an SSCC, tracking number, or internal reference. Value: <strong>${v}</strong>` };
+        if (dlen <= 5)   return { type:'Short numeric',    badge:'Numeric', color:'#b2bec3', title:`${dlen}-digit code`,  desc:`Short numeric — could be a PLU (price look-up), short coupon code, or local reference.` };
+      }
+
+      if (/^1Z[A-Z0-9]{16}$/.test(v))  return { type:'UPS tracking',        badge:'🚚 UPS',      color:'#fdcb6e', title:'UPS tracking number',            desc:`Value: <strong>${v}</strong>` };
+      if (/^JD\d{18}$/.test(v))         return { type:'DHL tracking',        badge:'🚚 DHL',      color:'#fdcb6e', title:'DHL tracking number',            desc:`Value: <strong>${v}</strong>` };
+      if (/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(v)) return { type:'Universal tracking', badge:'📮 Post', color:'#74b9ff', title:'Universal postal tracking (S10)', desc:`Standard international postal tracking format. Value: <strong>${v}</strong>` };
+      if (/^[A-Z0-9\-\.\ \$\/\+\%]{4,}$/.test(v)) return { type:'Code 39 / alphanumeric', badge:'Code 39', color:'#a29bfe', title:'Alphanumeric barcode (likely Code 39)', desc:`Contains characters used in Code 39. Value: <strong>${v}</strong>` };
+
+      return { type:'Unknown / other', badge:'?', color:'#636e72', title:'Unrecognised format', desc:`Raw content: <strong>${v}</strong>. Format could not be automatically determined.` };
+    }
+
+    function showGenericBarcode(raw, formatLabel) {
+      const trimmed = String(raw).trim();
+      if (!trimmed) return false;
+
+      const info = classifyBarcode(trimmed, formatLabel);
+
+      setGenericInputMode();
+      resultsSection.classList.remove('visible');
+
+      document.getElementById('genericValue').textContent = trimmed;
+      document.getElementById('genericSymbology').textContent = formatLabel ? `Symbology: ${formatLabel}` : 'Symbology: auto-detected';
+      document.getElementById('genericTypeBadge').textContent = info.badge;
+      document.getElementById('genericTypeBadge').style.background = (info.color || '#6c5ce7') + '25';
+      document.getElementById('genericTypeBadge').style.color = info.color || '#6c5ce7';
+      document.getElementById('classifyTitle').textContent = info.title;
+      document.getElementById('classifyDesc').innerHTML = info.desc;
+
+      // Extra detail rows
+      const detailsEl = document.getElementById('classifyDetails');
+      detailsEl.innerHTML = '';
+      if (info.details && info.details.length) {
+        info.details.forEach(d => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--border);';
+          row.innerHTML = `<span style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;min-width:60px;padding-top:2px;">${d.label}</span><span style="font-size:13px;color:var(--text-secondary);word-break:break-all;">${d.value}</span>`;
+          detailsEl.appendChild(row);
+        });
+      }
+
+      genericResult.classList.add('visible');
+      input.classList.remove('error');
+      input.value = trimmed;
+      infoText.innerHTML = `<span class="success-text">✓ Scanned — ${info.type}</span>`;
+      infoText.className = 'info-text success-text';
+      document.getElementById('btnClearResult').style.display = 'block';
+      return true;
+    }
+
+    // ── Code 128C analyser ────────────────────────────────────────────────────
+    //
+    // Asda uses TWO types of Code 128C barcode:
+    //
+    //   TYPE A — Price-setting label (markdown / clearance)
+    //     Sets the item TO a fixed price at the till.
+    //     Identified by format code 50 (Asda price label).
+    //     e.g. "Lint green £0.70" — scans and charges exactly 70p.
+    //
+    //   TYPE B — Discount coupon
+    //     Deducts an amount FROM the item price at the till.
+    //     Identified by format code 33 (Asda coupon).
+    //     e.g. "£0.80 off" coupon.
+    //
+    //   Structure: [FMT 2] [RETAILER 4] [OFFER 4] [VALUE 3] [SERIAL rest]
+    //
+    // Format codes seen in the wild:
+    //   33 = Asda discount coupon
+    //   50 = Asda price-setting label (markdown)
+    //   99 / 98 = Generic retail coupon (EAN-13 style)
+
+    const ASDA_PRICE_FORMATS  = ['50', '51', '52'];  // sets price TO value
+    const ASDA_COUPON_FORMATS = ['33', '34', '99', '98'];  // deducts value
+
+    // Known retailer IDs
+    const RETAILER_IDS = {
+      '0800': 'Asda',
+      '5000': 'Heinz',
+      '5010': 'Unilever',
+      '5011': 'Diageo',
+      '5021': 'Britvic',
+      '5029': 'Walkers / PepsiCo',
+      '5036': 'McVitie\'s',
+      '5041': 'Premier Foods',
+      '5045': 'Nestlé UK',
+      '5449': 'Coca-Cola',
+      '5000159': 'Heinz',
+      '5010251': 'Cadbury / Mondelēz',
+      '5000077': 'Kellogg\'s',
+      '5000236': 'Birds Eye',
+      '5010477': 'Batchelors',
+      '4005808': 'Nivea / Beiersdorf',
+      '4015400': 'Oral-B / P&G',
+      '4084500': 'Schwarzkopf',
+      '3168930': 'Danone',
+      '3057640': 'Yoplait',
+    };
+
+    function lookupRetailer(digits) {
+      for (const len of [7, 6, 5, 4]) {
+        const key = digits.slice(0, len);
+        if (RETAILER_IDS[key]) return { id: key, name: RETAILER_IDS[key], len };
+      }
+      return { id: digits.slice(0,4), name: null, len: 4 };
+    }
+
+    function decodeC128CValue(v, isPriceSetter) {
+      const n = parseInt(v, 10);
+      if (isNaN(n)) return { display: v, desc: `Value field: <strong>${v}</strong>.` };
+      if (n > 0 && n <= 9999) {
+        const pounds = Math.floor(n / 100);
+        const pence  = n % 100;
+        const money  = `£${pounds}.${String(pence).padStart(2,'0')}`;
+        if (isPriceSetter) {
+          return { display: money, desc: `Sets item price <strong>to ${money}</strong> at the till. This is a markdown/clearance label — it does not deduct from the original price.` };
+        } else {
+          return { display: money, desc: `Deducts <strong>${money} off</strong> the item price at the till. This is a discount coupon.` };
+        }
+      }
+      return { display: v, desc: `Value field: <strong>${v}</strong>.` };
+    }
+
+    function analyzeCode128C(value) {
+      const c128cSection = document.getElementById('c128cSection');
+      const c128cStrip   = document.getElementById('c128cStrip');
+      const c128cLabels  = document.getElementById('c128cLabels');
+      const c128cDetails = document.getElementById('c128cDetails');
+
+      const digits = value.replace(/\D/g, '');
+      const len    = digits.length;
+      const segs   = [];
+
+      let pos = 0;
+      let isPriceSetter = false;
+      let barcodeTypeLabel = '🏷 Coupon';
+      let barcodeTypeColor = '#fdcb6e';
+
+      if (len >= 18) {
+        const fmt      = digits.slice(0, 2); pos = 2;
+        const retailer = lookupRetailer(digits.slice(pos));
+        const retStr   = digits.slice(pos, pos + retailer.len); pos += retailer.len;
+
+        // Determine barcode type from format code
+        isPriceSetter = ASDA_PRICE_FORMATS.includes(fmt);
+        if (isPriceSetter) {
+          barcodeTypeLabel = '💰 Price Label';
+          barcodeTypeColor = '#00cec9';
+        }
+
+        let offerLen = 4;
+        if (len - pos - 3 - 6 < 4) offerLen = 3;
+
+        const offer    = digits.slice(pos, pos + offerLen); pos += offerLen;
+        const valueStr = digits.slice(pos, pos + 3);        pos += 3;
+        const serial   = digits.slice(pos);
+        const valInfo  = decodeC128CValue(valueStr, isPriceSetter);
+
+        const typeDesc = isPriceSetter
+          ? `Format <strong>${fmt}</strong> — Asda <strong>price-setting label</strong>. Sets item price to the value shown, does not deduct a discount.`
+          : `Format <strong>${fmt}</strong> — <strong>discount coupon</strong>. Deducts the value from the item price at the till.`;
+
+        segs.push({ label:'Format',          value: fmt,      cls:'ex-prefix', badgeCls:'badge-prefix', desc: typeDesc });
+        segs.push({ label:'Retailer',        value: retStr,   cls:'ex-issuer', badgeCls:'badge-issuer', desc: `Retailer ID: <strong>${retStr}</strong>${retailer.name ? ` — <strong>${retailer.name}</strong>` : '. Identifies the issuing store or brand'}.` });
+        segs.push({ label:'Offer / SKU Ref', value: offer,    cls:'ex-offer',  badgeCls:'badge-offer',  desc: `${isPriceSetter ? 'SKU / product reference' : 'Offer / promotion reference'}: <strong>${offer}</strong>.` });
+        segs.push({ label: isPriceSetter ? 'Set Price' : 'Discount', value: valueStr, cls:'ex-value', badgeCls:'badge-value', desc: valInfo.desc, highlight: valInfo.display });
+        if (serial) {
+          segs.push({ label:'Serial / Check', value: serial, cls:'ex-check', badgeCls:'badge-check', desc: `Unique serial and check data: <strong>${serial}</strong>. Used to prevent duplicate scans.` });
+        }
+
+      } else if (len >= 10) {
+        const fmt    = digits.slice(0, 2);
+        isPriceSetter = ASDA_PRICE_FORMATS.includes(fmt);
+        if (isPriceSetter) { barcodeTypeLabel = '💰 Price Label'; barcodeTypeColor = '#00cec9'; }
+        const mid    = Math.floor((len - 2) / 2) + 2;
+        const offer  = digits.slice(2, mid);
+        const valStr = digits.slice(mid, mid + 3);
+        const extra  = digits.slice(mid + 3);
+        const valInfo = decodeC128CValue(valStr, isPriceSetter);
+
+        segs.push({ label:'Format',     value: fmt,    cls:'ex-prefix', badgeCls:'badge-prefix', desc: `Format code: <strong>${fmt}</strong>.` });
+        segs.push({ label:'Offer Data', value: offer,  cls:'ex-issuer', badgeCls:'badge-issuer', desc: `Offer / issuer data: <strong>${offer}</strong>.` });
+        segs.push({ label: isPriceSetter ? 'Set Price' : 'Discount', value: valStr, cls:'ex-value', badgeCls:'badge-value', desc: valInfo.desc, highlight: valInfo.display });
+        if (extra) segs.push({ label:'Extra', value: extra, cls:'ex-check', badgeCls:'badge-check', desc: `Additional data: <strong>${extra}</strong>.` });
+
+      } else {
+        segs.push({ label:'Data', value: digits, cls:'ex-issuer', badgeCls:'badge-issuer', desc: `Raw payload: <strong>${digits}</strong>. Too short to determine structure automatically.` });
+      }
+
+      // Update the badge in the card header to reflect type
+      const badge = c128cSection.querySelector('span[style*="background"]');
+      if (badge) {
+        badge.textContent = barcodeTypeLabel;
+        badge.style.background = barcodeTypeColor + '25';
+        badge.style.color = barcodeTypeColor;
+      }
+
+      // Build visual strip
+      c128cStrip.innerHTML  = segs.map(s => `<div class="example-seg ${s.cls}" style="flex:${s.value.length};min-width:0;overflow:hidden;text-overflow:ellipsis;">${s.value}</div>`).join('');
+      c128cLabels.innerHTML = segs.map(s => `<div class="example-label" style="flex:${s.value.length}">${s.label}</div>`).join('');
+
+      // Build detail rows
+      c128cDetails.innerHTML = segs.map(s => `
+        <div class="detail-row">
+          <div class="detail-badge ${s.badgeCls}">${s.value}</div>
+          <div class="detail-content">
+            <div class="detail-title">${s.label}${s.highlight ? `&ensp;<span style="color:#55efc4;font-size:15px;font-weight:800;">${s.highlight}</span>` : ''}</div>
+            <div class="detail-desc">${s.desc}</div>
+          </div>
+        </div>`).join('');
+
+      c128cSection.classList.add('visible');
+      const valSeg = segs.find(s => s.highlight);
+      const action = isPriceSetter ? 'sets price to' : 'deducts';
+      infoText.innerHTML = `<span class="success-text">✓ Code 128C — ${isPriceSetter ? 'Price label' : 'Coupon'} ${valSeg ? action + ' ' + valSeg.highlight : 'parsed'}</span>`;
+      infoText.className = 'info-text success-text';
+    }
+
+    // Known Code 128C format codes (first 2 digits of payload)
+    const C128C_FORMAT_CODES = new Set(['33','34','50','51','52','99','98']);
+
+    // Returns true if this looks like a Code 128C retail barcode.
+    // Uses the reported symbology AND the leading format code — does NOT
+    // require a minimum length, so short payloads like 505433155702 work too.
+    function isCode128C(value, formatLabel) {
+      const digits = value.replace(/\D/g, '');
+      if (digits !== value.trim()) return false;      // must be all digits
+      if (digits.length < 10)     return false;      // too short to be meaningful
+      if (digits.length % 2 !== 0) return false;     // Code 128C always encodes pairs
+
+      const fmt = (formatLabel || '').toUpperCase().replace(/[_\-\s]/g, '');
+      const reportedAsC128 = fmt.includes('CODE128') || fmt.includes('GS1128');
+      const hasC128CPrefix = C128C_FORMAT_CODES.has(digits.slice(0, 2));
+
+      // Accept if library said CODE128 + known prefix, OR unknown symbology + known prefix + even long digits
+      if (reportedAsC128 && (hasC128CPrefix || digits.length >= 18)) return true;
+      if (hasC128CPrefix && digits.length >= 12) return true;  // known format code is strong enough signal
+      return false;
+    }
+
+    function handleScannedBarcode(raw, decodedResult) {
+      const trimmed = String(raw).trim();
+      if (!trimmed) return false;
+
+      const fmt    = formatLabelFromResult(decodedResult);
+      const digits = trimmed.replace(/\D/g, '');
+
+      // Hide Code 128C card by default
+      document.getElementById('c128cSection').classList.remove('visible');
+
+      // ── Code 128C check FIRST — before EAN-13 ──────────────────────────────
+      // A 12-digit all-even Code 128C payload (e.g. 505433155702) would otherwise
+      // be misrouted as UPC-A/EAN-13. Symbology reported by the library is the
+      // ground truth — trust it over digit-length heuristics.
+      if (isCode128C(trimmed, fmt)) {
+        setGenericInputMode();
+        resultsSection.classList.remove('visible');
+        genericResult.classList.remove('visible');
+        document.getElementById('btnClearResult').style.display = 'block';
+        input.value = trimmed;
+        showGenericBarcode(trimmed, fmt || 'CODE128');
+        analyzeCode128C(trimmed);
+        return true;
+      }
+
+      // ── EAN-13 / UPC-A ─────────────────────────────────────────────────────
+      const isEan13 = /^\d{12,13}$/.test(digits);
+      if (isEan13) {
+        setEanInputMode();
+        const val = digits.length === 12
+          ? digits + String(calculateCheckDigit(digits))
+          : digits.slice(0, 13);
+        input.classList.remove('error');
+        input.value = val;
+
+        const prefix2 = val.slice(0, 2);
+        if (prefix2 === '99' || prefix2 === '98') {
+          input.dispatchEvent(new Event('input'));
+          return true;
+        }
+
+        showGenericBarcode(val, fmt || 'EAN_13');
+        return true;
+      }
+
+      return showGenericBarcode(trimmed, fmt);
+    }
+
+    const html5QrCode = new Html5Qrcode('readerHidden', scannerCreateConfig);
+    let cropper = null;
+    let cameraScanner = null;
+    let cameraStarting = false;
+    let scanLocked = false;
+    let lastScanValue = '';   // debounce: value from previous frame
+    let lastScanCount = 0;    // how many consecutive frames matched
+
+    const cropContainer = document.getElementById('cropContainer');
+    const imageToCrop = document.getElementById('imageToCrop');
+    const btnCancelCrop = document.getElementById('btnCancelCrop');
+    const btnScanCrop = document.getElementById('btnScanCrop');
+
+    const btnCameraScan = document.getElementById('btnCameraScan');
+    const cameraContainer = document.getElementById('cameraContainer');
+    const cameraReaderEl = document.getElementById('cameraReader');
+    const cameraHint = document.getElementById('cameraHint');
+    const btnStopCamera = document.getElementById('btnStopCamera');
+
+    async function stopCamera() {
+      scanLocked = false;
+      cameraStarting = false;
+      lastScanValue = '';
+      lastScanCount = 0;
+      btnCameraScan.disabled = false;
+
+      if (!cameraScanner) {
+        cameraContainer.style.display = 'none';
+        cameraReaderEl.innerHTML = '';
+        return;
+      }
+
+      const scanner = cameraScanner;
+      cameraScanner = null;
+
+      try {
+        await scanner.stop();
+      } catch (_) { /* already stopped */ }
+
+      try {
+        scanner.clear();
+      } catch (_) { /* ignore */ }
+
+      cameraReaderEl.innerHTML = '';
+      cameraContainer.style.display = 'none';
+
+      if (!input.value) {
+        infoText.innerHTML = '<span>Waiting for 13 numeric digits</span>';
+        infoText.className = 'info-text';
+      }
+    }
+
+    async function resolveCameraId() {
+      try {
+        const cameras = await Html5Qrcode.getCameras();
+        if (!cameras || cameras.length === 0) {
+          return { facingMode: 'environment' };
+        }
+        const backCam = cameras.find((c) => /back|rear|environment/i.test(c.label));
+        if (backCam) return backCam.id;
+        return cameras[cameras.length - 1].id;
+      } catch (_) {
+        return { facingMode: 'environment' };
+      }
+    }
+
+    async function startCamera() {
+      if (cameraStarting) return;
+
+      if (typeof Html5Qrcode === 'undefined') {
+        alert('Scanner library failed to load. Check your connection and refresh the page.');
+        return;
+      }
+
+      if (cropper) cancelCrop();
+
+      cameraStarting = true;
+      scanLocked = false;
+      btnCameraScan.disabled = true;
+      resultsSection.classList.remove('visible');
+      input.classList.remove('error');
+
+      await stopCamera();
+
+      cameraContainer.style.display = 'block';
+      infoText.innerHTML = '<span>Starting camera…</span>';
+      infoText.className = 'info-text';
+
+      cameraScanner = new Html5Qrcode('cameraReader', scannerCreateConfig);
+      const cameraIdOrConfig = await resolveCameraId();
+
+      try {
+        await cameraScanner.start(
+          cameraIdOrConfig,
+          cameraScanConfig,
+            (decodedText, decodedResult) => {
+                if (scanLocked) return;
+
+                const val = String(decodedText).trim();
+
+                // Require the same value 2 frames in a row before accepting.
+                // This eliminates single-frame mis-reads (garbled long strings, noise).
+                if (val === lastScanValue) {
+                    lastScanCount++;
+                } else {
+                    lastScanValue = val;
+                    lastScanCount = 1;
+                    return; // wait for confirmation frame
+                }
+
+                if (lastScanCount < 2) return;
+
+                // Confirmed — accept the scan
+                lastScanValue = '';
+                lastScanCount = 0;
+
+                if (handleScannedBarcode(val, decodedResult)) {
+                    scanLocked = true;
+                    stopCamera();
+                }
+            },
+          () => {
+            // No barcode in frame — reset debounce counter so partial reads don't accumulate
+            lastScanCount = 0;
+          }
+        );
+
+        infoText.innerHTML = '<span class="success-text">Camera ready — align the barcode or 2D code in the box</span>';
+        infoText.className = 'info-text success-text';
+        if (cameraHint) {
+          cameraHint.textContent = 'Tip: fill the box with the barcode or 2D code, hold steady, and ensure good lighting.';
+        }
+      } catch (err) {
+        console.error('Camera start error:', err);
+        infoText.innerHTML = '<span class="error-text">! Could not start camera. Allow camera access or try Upload Image instead.</span>';
+        infoText.className = 'info-text error-text';
+        await stopCamera();
+      } finally {
+        cameraStarting = false;
+        btnCameraScan.disabled = false;
+      }
+    }
+
+    btnCameraScan.addEventListener('click', () => {
+      startCamera();
+    });
+
+    btnStopCamera.addEventListener('click', () => {
+      stopCamera();
+    });
+
+    // Image Upload
+    imageUpload.addEventListener('change', (e) => {
+      if (e.target.files.length == 0) return;
+      if (cameraScanner) void stopCamera();
+
+      const file = e.target.files[0];
+
+      // Clean up previous cropper
+      if (cropper) {
+          cropper.destroy();
+          cropper = null;
+      }
+
+      imageToCrop.src = URL.createObjectURL(file);
+      cropContainer.style.display = 'block';
+      resultsSection.classList.remove('visible');
+      infoText.innerHTML = `<span>Please crop the image to the barcode</span>`;
+      infoText.className = 'info-text';
+
+      imageToCrop.onload = () => {
+          cropper = new Cropper(imageToCrop, {
+              viewMode: 1,
+              dragMode: 'crop',
+              autoCropArea: 0.8,
+              restore: false,
+              guides: true,
+              center: true,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: false,
+          });
+      };
+
+      // Reset input so the same file can be uploaded again if needed
+      e.target.value = "";
+    });
+
+    btnCancelCrop.addEventListener('click', cancelCrop);
+    document.getElementById('btnCloseCrop').addEventListener('click', cancelCrop);
+    
+    function cancelCrop() {
+        cropContainer.style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        setEanInputMode();
+        genericResult.classList.remove('visible');
+        document.getElementById('c128cSection').classList.remove('visible');
+        document.getElementById('btnClearResult').style.display = 'none';
+        infoText.innerHTML = `<span>Waiting for 13 numeric digits</span>`;
+        infoText.className = 'info-text';
+    }
+
+    btnScanCrop.addEventListener('click', () => {
+        if (!cropper) return;
+
+        infoText.innerHTML = `<span>Scanning cropped image...</span>`;
+        infoText.className = 'info-text';
+
+        cropper.getCroppedCanvas().toBlob((blob) => {
+            const file = new File([blob], "cropped.png", { type: "image/png" });
+
+            html5QrCode.scanFile(file, false)
+              .then(decodedText => {
+                  if (!handleScannedBarcode(decodedText)) {
+                    throw new Error('Empty barcode');
+                  }
+
+                  cropContainer.style.display = 'none';
+                  cropper.destroy();
+                  cropper = null;
+              })
+              .catch(err => {
+                  infoText.innerHTML = `<span class="error-text">! Could not find a valid barcode in this cropped area</span>`;
+                  infoText.className = 'info-text error-text';
+                  resultsSection.classList.remove('visible');
+                  input.classList.add('error');
+                  console.error("Barcode scan error:", err);
+              });
+        }, 'image/png');
+    });
+
+    function analyzeBarcode(barcode) {
+      const prefix = barcode.slice(0, 2);
+      const issuer = barcode.slice(2, 6);
+      const offer = barcode.slice(6, 9);
+      const value = barcode.slice(9, 12);
+      const actualCheck = barcode.slice(12, 13);
+      const expectedCheck = calculateCheckDigit(barcode.slice(0, 12));
+
+      const isValid = actualCheck === expectedCheck.toString();
+
+      // Update Breakdown Strip
+      resPrefix.textContent = prefix;
+      resIssuer.textContent = issuer;
+      resOffer.textContent = offer;
+      resValue.textContent = value.slice(0, 3);
+      resCheck.textContent = actualCheck;
+
+      // Update Badges
+      badgePrefix.textContent = prefix;
+      badgeIssuer.textContent = issuer;
+      badgeOffer.textContent = offer;
+      badgeValue.textContent = value.slice(0, 3);
+      badgeCheck.textContent = actualCheck;
+
+      // Update Descriptions
+      if (prefix === "99") {
+        descPrefix.innerHTML = "Coupon prefix. Indicates an in-store voucher/coupon.";
+      } else {
+        descPrefix.innerHTML = "General product prefix. <strong>Note:</strong> Not a standard '99' voucher coupon.";
+      }
+
+      descIssuer.innerHTML = `Issuer ID: <strong>${issuer}</strong>. Identifies the retailer or manufacturer.`;
+      descOffer.innerHTML = `Offer ID: <strong>${offer}</strong>. Unique reference for the specific promotion.`;
+
+      // Parse value
+      const numericValue = parseInt(value.slice(0, 3), 10);
+      if (!isNaN(numericValue)) {
+        const pounds = Math.floor(numericValue / 100);
+        const pence = numericValue % 100;
+        const formattedValue = `£${pounds}.${pence.toString().padStart(2, '0')}`;
+        descValue.innerHTML = `Encoded Value: <strong>${numericValue}</strong> (typically translates to <strong>${formattedValue}</strong>).`;
+      } else {
+        descValue.innerHTML = `Encoded Value: <strong>${value.slice(0, 3)}</strong>.`;
+      }
+
+
+      if (isValid) {
+        descCheck.innerHTML = `Valid check digit! The calculated checksum matches the provided digit (<strong>${actualCheck}</strong>).`;
+        badgeCheck.className = 'detail-badge badge-valid';
+        resCheck.className = 'example-seg ex-check badge-valid';
+        infoText.innerHTML = `<span class="success-text">✓ Barcode successfully parsed and validated</span>`;
+        infoText.className = 'info-text success-text';
+      } else {
+        descCheck.innerHTML = `<strong>Invalid check digit!</strong> Expected <strong>${expectedCheck}</strong>, but got <strong>${actualCheck}</strong>. This barcode will likely not scan.`;
+        badgeCheck.className = 'detail-badge badge-check ex-invalid';
+        resCheck.className = 'example-seg ex-check ex-invalid';
+        infoText.innerHTML = `<span class="error-text">! Checksum validation failed</span>`;
+        infoText.className = 'info-text error-text';
+        input.classList.add('error');
+      }
+
+      genericResult.classList.remove('visible');
+      resultsSection.classList.add('visible');
+    }
+
+    setEanInputMode();
+
+  </script>
+</body>
+
+</html>

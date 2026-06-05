@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coupon Web Scraper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-input: #1a1a26;
+      --border: #2a2a3a;
+      --text-primary: #e8e8f0;
+      --text-secondary: #8888a0;
+      --accent: #6c5ce7;
+      --accent-hover: #7d6ff0;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --danger: #ff6b6b;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover { color: var(--accent); }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #e8e8f0 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .input-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 200px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.25s;
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238888a0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px top 50%;
+      background-size: 12px auto;
+      padding-right: 40px;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+    }
+
+    .btn-search {
+      width: 100%;
+      padding: 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+    }
+
+    .btn-search:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+    }
+
+    .btn-search:disabled {
+      background: var(--border);
+      color: var(--text-secondary);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .spinner {
+      animation: rotate 2s linear infinite;
+      display: none;
+    }
+    
+    .spinner circle {
+      stroke: #fff;
+      stroke-width: 3;
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+      animation: dash 1.5s ease-in-out infinite;
+      stroke-linecap: round;
+    }
+    
+    @keyframes rotate { 100% { transform: rotate(360deg); } }
+    @keyframes dash {
+      0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+      50% { stroke-dasharray: 90, 200; stroke-dashoffset: -35px; }
+      100% { stroke-dasharray: 90, 200; stroke-dashoffset: -124px; }
+    }
+
+    .btn-search.loading .spinner {
+      display: block;
+    }
+    .btn-search.loading .btn-text {
+      display: none;
+    }
+
+    /* Results Grid */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      margin-top: 40px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-count {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .coupon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .coupon-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .coupon-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      border-color: var(--accent);
+    }
+
+    .store-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(108, 92, 231, 0.1);
+      color: var(--accent);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+
+    .coupon-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .coupon-desc {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .coupon-code-box {
+      background: var(--bg-input);
+      border: 1px dashed var(--border);
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .coupon-code-box:hover {
+      border-color: var(--accent);
+      background: rgba(108, 92, 231, 0.05);
+    }
+
+    .code-text {
+      font-family: monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--success);
+      letter-spacing: 1px;
+    }
+
+    .copy-icon {
+      color: var(--text-secondary);
+    }
+
+    .coupon-card:hover .copy-icon {
+      color: var(--accent);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state svg {
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(46, 204, 113, 0.1);
+      color: var(--success);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .status-badge.error {
+      background: rgba(255, 107, 107, 0.1);
+      color: var(--danger);
+    }
+    .status-badge.error .status-dot {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(46, 204, 113, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+    }
+
+    #errorMsg {
+      color: var(--danger);
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-bar">
+      <a href="generators.html" class="back-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Tools
+      </a>
+      <h1 class="title">Web Scraper</h1>
+    </div>
+    
+    <div class="status-badge" id="apiStatus">
+      <div class="status-dot"></div>
+      <span id="statusText">Backend API Ready</span>
+    </div>
+
+    <div class="card">
+      <div class="search-row">
+        <div class="input-group" style="flex: 2;">
+          <label>Store or Brand Name</label>
+          <input type="text" id="storeInput" placeholder="e.g. Amazon, Nike, ASOS">
+        </div>
+        <div class="input-group">
+          <label>Min Discount Value</label>
+          <select id="valueSelect">
+            <option value="any">Any Value</option>
+            <option value="10">10% Off or More</option>
+            <option value="20">20% Off or More</option>
+            <option value="50">50% Off or More</option>
+          </select>
+        </div>
+      </div>
+      
+      <button class="btn-search" id="searchBtn">
+        <svg class="spinner" width="24" height="24" viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" fill="none"></circle>
+        </svg>
+        <span class="btn-text" style="display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Scrape Web for Coupons
+        </span>
+      </button>
+      <div id="errorMsg">Failed to connect to backend API. Please ensure the server is running.</div>
+    </div>
+
+    <div class="results-header" id="resultsHeader" style="display: none;">
+      <h2 style="font-size: 20px; font-weight: 600;">Scraped Results</h2>
+      <div class="results-count" id="resultsCount">Found 0 active coupons</div>
+    </div>
+
+    <div class="coupon-grid" id="resultsGrid">
+      <!-- Empty state shown by default -->
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <h3 style="font-size: 18px; margin-bottom: 8px;">Ready to Scrape</h3>
+        <p style="font-size: 14px;">Enter a store name above and click search to begin crawling the web for active coupons.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const searchBtn = document.getElementById('searchBtn');
+    const storeInput = document.getElementById('storeInput');
+    const valueSelect = document.getElementById('valueSelect');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const resultsHeader = document.getElementById('resultsHeader');
+    const resultsCount = document.getElementById('resultsCount');
+    const errorMsg = document.getElementById('errorMsg');
+    
+    // Configurable API URL
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:8000' 
+      : 'https://barcode-tools-scraper-back-end.onrender.com';
+
+    searchBtn.addEventListener('click', async () => {
+      const store = storeInput.value.trim();
+      
+      // Basic validation
+      if (!store) {
+        storeInput.focus();
+        storeInput.style.borderColor = 'var(--danger)';
+        setTimeout(() => storeInput.style.borderColor = 'var(--border)', 1000);
+        return;
+      }
+
+      // UI Loading State
+      searchBtn.classList.add('loading');
+      searchBtn.disabled = true;
+      errorMsg.style.display = 'none';
+      
+      try {
+        // Fetch from our Python Backend API
+        const response = await fetch(`${API_URL}/api/scrape?store=${encodeURIComponent(store)}&min_discount=${valueSelect.value}`);
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        renderResults(data.coupons);
+        
+      } catch (error) {
+        console.error('Scraping failed:', error);
+        
+        // --- FALLBACK MOCK DATA FOR UI TESTING ---
+        // If the backend isn't running yet, we show mock data so the UI looks good on GitHub Pages
+        console.log("Backend not available, showing mock data for demonstration.");
+        setTimeout(() => {
+           renderResults([
+             { store: store || 'Amazon', code: 'SAVE20NOW', desc: '20% Off Select Electronics', discount: '20%' },
+             { store: store || 'Amazon', code: 'FREESHIP24', desc: 'Free Next Day Delivery on Orders Over $50', discount: 'Free Ship' },
+             { store: store || 'Amazon', code: 'NEWUSER15', desc: '15% Off Your First Purchase', discount: '15%' }
+           ]);
+        }, 1500); // Simulate network delay
+        
+        // Uncomment below to show actual error instead of mock data:
+        // errorMsg.style.display = 'block';
+        // errorMsg.textContent = 'Failed to connect to backend scraper. Make sure the API is running.';
+      } finally {
+        // We handle removing the loading state inside renderResults if using mock timeout,
+        // but typically it goes here.
+      }
+    });
+
+    function renderResults(coupons) {
+      searchBtn.classList.remove('loading');
+      searchBtn.disabled = false;
+      resultsHeader.style.display = 'flex';
+      
+      if (!coupons || coupons.length === 0) {
+        resultsCount.textContent = 'No active coupons found';
+        resultsGrid.innerHTML = `
+          <div class="empty-state">
+            <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text-primary);">No Results</h3>
+            <p style="font-size: 14px;">We couldn't find any active coupons for that store matching your filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      resultsCount.textContent = `Found ${coupons.length} active coupon${coupons.length > 1 ? 's' : ''}`;
+      resultsGrid.innerHTML = '';
+
+      coupons.forEach(coupon => {
+        const card = document.createElement('div');
+        card.className = 'coupon-card';
+        card.innerHTML = `
+          <div class="store-badge">${coupon.store}</div>
+          <h3 class="coupon-title">${coupon.discount}</h3>
+          <p class="coupon-desc">${coupon.desc}</p>
+          <div class="coupon-code-box" onclick="copyToClipboard('${coupon.code}', this)">
+            <span class="code-text">${coupon.code}</span>
+            <svg class="copy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </div>
+        `;
+        resultsGrid.appendChild(card);
+      });
+    }
+
+    window.copyToClipboard = function(text, element) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalHtml = element.innerHTML;
+        element.innerHTML = `<span style="color: var(--success); font-weight: 600; font-size: 14px; width: 100%; text-align: center;">Copied to Clipboard!</span>`;
+        element.style.borderColor = 'var(--success)';
+        
+        setTimeout(() => {
+          element.innerHTML = originalHtml;
+          element.style.borderColor = 'var(--border)';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

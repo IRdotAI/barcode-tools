@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAN-13 Template Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-input: #1a1a26;
+      --border: #2a2a3a;
+      --text-primary: #e8e8f0;
+      --text-secondary: #8888a0;
+      --text-muted: #55556a;
+      --accent: #6c5ce7;
+      --accent-hover: #7d6ff0;
+      --accent-glow: rgba(108, 92, 231, 0.25);
+      --success: #00cec9;
+      --danger: #ff6b6b;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -40%;
+      left: -20%;
+      width: 60%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(108, 92, 231, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    /* Back button */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Template diagram */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 20px;
+    }
+
+    /* Structure diagram */
+    .structure {
+      display: flex;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .structure-seg {
+      flex: 1;
+      padding: 20px 12px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .structure-seg:last-child {
+      border-right: none;
+    }
+
+    .structure-seg:hover {
+      background: rgba(108, 92, 231, 0.04);
+    }
+
+    .seg-digits {
+      font-family: 'Inter', monospace;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+
+    .seg-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .seg-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Segment widths */
+    .seg-w2 {
+      flex: 2;
+    }
+
+    .seg-w4 {
+      flex: 4;
+    }
+
+    .seg-w3 {
+      flex: 3;
+    }
+
+    .seg-w1 {
+      flex: 1.5;
+    }
+
+    /* Details table */
+    .details {
+      margin-top: 0;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-badge {
+      min-width: 56px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-family: 'Inter', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+
+    .badge-prefix {
+      background: rgba(108, 92, 231, 0.15);
+      color: var(--accent);
+    }
+
+    .badge-issuer {
+      background: rgba(0, 206, 201, 0.12);
+      color: var(--success);
+    }
+
+    .badge-offer {
+      background: rgba(253, 203, 110, 0.12);
+      color: #fdcb6e;
+    }
+
+    .badge-value {
+      background: rgba(85, 239, 196, 0.12);
+      color: #55efc4;
+    }
+
+    .badge-check {
+      background: rgba(255, 107, 107, 0.12);
+      color: var(--danger);
+    }
+
+    .detail-content {
+      flex: 1;
+    }
+
+    .detail-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .detail-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .detail-length {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Example section */
+    .example-strip {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .example-seg {
+      padding: 14px 0;
+      text-align: center;
+      font-family: 'Inter', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-right: 1px solid var(--border);
+    }
+
+    .example-seg:last-child {
+      border-right: none;
+    }
+
+    .ex-prefix {
+      flex: 2;
+      background: rgba(108, 92, 231, 0.08);
+      color: var(--accent);
+    }
+
+    .ex-issuer {
+      flex: 4;
+      background: rgba(0, 206, 201, 0.06);
+      color: var(--success);
+    }
+
+    .ex-offer {
+      flex: 3;
+      background: rgba(253, 203, 110, 0.06);
+      color: #fdcb6e;
+    }
+
+    .ex-value {
+      flex: 3;
+      background: rgba(85, 239, 196, 0.06);
+      color: #55efc4;
+    }
+
+    .ex-check {
+      flex: 1.5;
+      background: rgba(255, 107, 107, 0.06);
+      color: var(--danger);
+    }
+
+    .example-labels {
+      display: flex;
+      margin-top: 6px;
+    }
+
+    .example-label {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .el-prefix {
+      flex: 2;
+    }
+
+    .el-issuer {
+      flex: 4;
+    }
+
+    .el-offer {
+      flex: 3;
+    }
+
+    .el-value {
+      flex: 3;
+    }
+
+    .el-check {
+      flex: 1.5;
+    }
+
+    /* Back to generator button */
+    .btn-back {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      margin-top: 8px;
+    }
+
+    .btn-back:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        max-width: 100%;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .structure {
+        flex-direction: column;
+      }
+
+      .structure-seg {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        padding: 14px 16px;
+      }
+
+      .structure-seg:last-child {
+        border-bottom: none;
+      }
+
+      .seg-digits {
+        min-width: 70px;
+        font-size: 18px;
+      }
+
+      .example-strip {
+        flex-direction: column;
+      }
+
+      .example-seg {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 16px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .example-labels {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Back link -->
+    <a href="generators.html" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+      </svg>
+      Back to Generator
+    </a>
+
+    <div class="header">
+      <h1>Barcode Template</h1>
+      <p>EAN-13 structure breakdown — use this as a reference when building your barcode</p>
+    </div>
+
+    <!-- Structure Diagram -->
+    <div class="card">
+      <div class="card-title">Structure Overview</div>
+      <div class="structure">
+        <div class="structure-seg seg-w2">
+          <div class="seg-digits">99</div>
+          <div class="seg-name">Prefix</div>
+          <div class="seg-desc">2 digits</div>
+        </div>
+        <div class="structure-seg seg-w4">
+          <div class="seg-digits">XXXX</div>
+          <div class="seg-name">Issuer Code</div>
+          <div class="seg-desc">4 digits</div>
+        </div>
+        <div class="structure-seg seg-w3">
+          <div class="seg-digits">NNN</div>
+          <div class="seg-name">Offer Ref</div>
+          <div class="seg-desc">3 digits</div>
+        </div>
+        <div class="structure-seg seg-w3">
+          <div class="seg-digits">VVV</div>
+          <div class="seg-name">Value</div>
+          <div class="seg-desc">3 digits</div>
+        </div>
+        <div class="structure-seg seg-w1">
+          <div class="seg-digits">C</div>
+          <div class="seg-name">Check</div>
+          <div class="seg-desc">1 digit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segment Details -->
+    <div class="card">
+      <div class="card-title">Segment Details</div>
+      <div class="details">
+        <div class="detail-row">
+          <div class="detail-badge badge-prefix">99</div>
+          <div class="detail-content">
+            <div class="detail-title">Prefix</div>
+            <div class="detail-desc">Fixed coupon prefix. Always <strong>99</strong> for in-store coupon/voucher
+              barcodes under the GS1 standard.</div>
+            <div class="detail-length">Position 1–2 · 2 digits · Fixed</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-issuer">XXXX</div>
+          <div class="detail-content">
+            <div class="detail-title">Issuer Code</div>
+            <div class="detail-desc">Identifies the company or manufacturer that issued the coupon. This is a unique
+              4-digit code assigned to the retailer.</div>
+            <div class="detail-length">Position 3–6 · 4 digits · Variable</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-offer">NNN</div>
+          <div class="detail-content">
+            <div class="detail-title">Offer Reference</div>
+            <div class="detail-desc">A unique reference number for the specific offer or promotion. Used to distinguish
+              between different deals from the same issuer.</div>
+            <div class="detail-length">Position 7–9 · 3 digits · Variable</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-value">VVV</div>
+          <div class="detail-content">
+            <div class="detail-title">Value</div>
+            <div class="detail-desc">The monetary value encoded in the barcode. Typically represents the value in the
+              smallest currency unit (e.g. pence).</div>
+            <div class="detail-length">Position 10–12 · 3 digits · Variable</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-badge badge-check">C</div>
+          <div class="detail-content">
+            <div class="detail-title">Check Digit</div>
+            <div class="detail-desc">Automatically calculated using the EAN-13 checksum algorithm. Ensures the barcode
+              is valid and can be scanned correctly.</div>
+            <div class="detail-length">Position 13 · 1 digit · Auto-calculated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example -->
+    <div class="card">
+      <div class="card-title">Example Breakdown</div>
+      <div class="example-strip">
+        <div class="example-seg ex-prefix">99</div>
+        <div class="example-seg ex-issuer">1234</div>
+        <div class="example-seg ex-offer">567</div>
+        <div class="example-seg ex-value">890</div>
+        <div class="example-seg ex-check">9</div>
+      </div>
+      <div class="example-labels">
+        <div class="example-label el-prefix">Prefix</div>
+        <div class="example-label el-issuer">Issuer Code</div>
+        <div class="example-label el-offer">Offer Ref</div>
+        <div class="example-label el-value">Value</div>
+        <div class="example-label el-check">Check</div>
+      </div>
+      <p style="margin-top: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+        Full barcode: <strong
+          style="color: var(--text-primary); letter-spacing: 2px; font-family: monospace;">9912345678909</strong>
+      </p>
+    </div>
+
+    <!-- Back to generator -->
+    <a href="index.html" class="btn-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <line x1="6" y1="8" x2="6" y2="16" />
+        <line x1="9" y1="8" x2="9" y2="16" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="15" y1="8" x2="15" y2="16" />
+        <line x1="18" y1="8" x2="18" y2="16" />
+      </svg>
+      Back to Generator
+    </a>
+  </div>
+</body>
+
+</html>
