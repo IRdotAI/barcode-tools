@@ -92,13 +92,10 @@
     }
 
     /* ── Search input ── */
-    .search-wrap {
-      position: relative;
-    }
+    .search-wrap { position: relative; }
     .search-wrap svg.search-icon {
       position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-      color: var(--text-muted); pointer-events: none;
-      transition: color 0.2s;
+      color: var(--text-muted); pointer-events: none; transition: color 0.2s;
     }
     .search-wrap:focus-within svg.search-icon { color: var(--accent); }
 
@@ -115,7 +112,6 @@
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    /* clear X button */
     .search-clear {
       display: none; position: absolute; right: 12px; top: 50%;
       transform: translateY(-50%); background: none; border: none;
@@ -128,8 +124,12 @@
     /* ── Results list ── */
     #searchResults {
       margin-top: 14px; display: none; flex-direction: column; gap: 8px;
+      max-height: 400px; overflow-y: auto;
     }
     #searchResults.visible { display: flex; }
+    #searchResults::-webkit-scrollbar { width: 4px; }
+    #searchResults::-webkit-scrollbar-track { background: transparent; }
+    #searchResults::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
     .result-status {
       font-size: 12px; color: var(--text-muted); text-align: center;
@@ -164,7 +164,7 @@
       margin-bottom: 4px; line-height: 1.4;
     }
     .product-meta {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     }
     .product-price {
       font-size: 12px; font-weight: 600; color: var(--sainsbury-orange);
@@ -197,15 +197,20 @@
       width: 36px; height: 36px; border-radius: 6px;
       object-fit: contain; background: #fff; padding: 3px; flex-shrink: 0;
     }
-    #selectedBadgeName {
-      flex: 1; font-size: 13px; font-weight: 500;
-      color: var(--text-primary); min-width: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .selected-badge-info { flex: 1; min-width: 0; }
+    .selected-badge-name {
+      font-size: 13px; font-weight: 500; color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .selected-badge-price {
+      font-size: 12px; font-weight: 600; color: var(--sainsbury-orange);
+      margin-top: 2px;
     }
     #selectedBadgeClear {
       background: none; border: none; color: var(--text-muted);
       cursor: pointer; padding: 4px; border-radius: 4px;
       display: flex; align-items: center; transition: color 0.2s;
+      flex-shrink: 0;
     }
     #selectedBadgeClear:hover { color: var(--danger); }
 
@@ -217,6 +222,17 @@
       color: var(--text-secondary); margin-bottom: 8px;
       text-transform: uppercase; letter-spacing: 0.6px;
     }
+
+    .price-wrap {
+      position: relative;
+    }
+    .price-wrap .pound-sign {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; font-weight: 600; color: var(--text-muted);
+      pointer-events: none;
+    }
+    .price-wrap:focus-within .pound-sign { color: var(--sainsbury-orange); }
+
     input[type="text"], input[type="number"] {
       width: 100%; padding: 13px 16px;
       background: var(--bg-input); border: 1px solid var(--border);
@@ -224,6 +240,7 @@
       font-family: 'Inter', monospace; font-size: 16px; font-weight: 500;
       outline: none; transition: all 0.25s ease;
     }
+    .price-wrap input { padding-left: 36px; }
     input::placeholder { color: var(--text-muted); font-size: 14px; }
     input:focus {
       border-color: var(--border-focus);
@@ -235,6 +252,10 @@
       margin-top: 7px; font-size: 12px; color: var(--text-muted);
     }
     .info-text.warning { color: #f39c12; }
+    .price-preview {
+      font-weight: 600; color: var(--sainsbury-orange);
+      transition: color 0.2s;
+    }
 
     /* ── Generate button ── */
     .btn-generate {
@@ -261,21 +282,50 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    .barcode-product-label {
+      text-align: center; margin-bottom: 16px;
+    }
+    .barcode-product-label .bpl-name {
+      font-size: 14px; font-weight: 600; color: var(--text-primary);
+      margin-bottom: 4px; line-height: 1.4;
+    }
+    .barcode-product-label .bpl-price {
+      font-size: 13px; font-weight: 600; color: var(--sainsbury-orange);
+    }
+
     .barcode-wrapper {
       background: #fff; border-radius: 14px; padding: 24px;
       display: flex; flex-direction: column; align-items: center; margin-bottom: 12px;
     }
     canvas { max-width: 100%; height: auto; }
 
-    .btn-download {
-      width: 100%; padding: 13px 20px; border-radius: var(--radius);
+    .barcode-digits-copy {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 10px; cursor: pointer; padding: 6px 12px;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    .barcode-digits-copy:hover { background: rgba(255,255,255,0.06); }
+    .barcode-digits-copy .digits {
+      font-size: 13px; font-family: 'Inter', monospace; letter-spacing: 1.5px;
+      color: var(--text-secondary);
+    }
+    .barcode-digits-copy .copy-icon { color: var(--text-muted); flex-shrink: 0; }
+    .barcode-digits-copy.copied .digits { color: var(--success); }
+    .barcode-digits-copy.copied .copy-icon { color: var(--success); }
+
+    .btn-row {
+      display: flex; gap: 10px;
+    }
+
+    .btn-download, .btn-share {
+      flex: 1; padding: 13px 20px; border-radius: var(--radius);
       background: var(--bg-input); color: var(--text-primary);
       border: 1px solid var(--border); font-family: 'Inter', sans-serif;
       font-size: 14px; font-weight: 600; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all 0.2s;
+      transition: all 0.2s; text-decoration: none;
     }
-    .btn-download:hover { background: #22222e; border-color: #4a4a5a; }
+    .btn-download:hover, .btn-share:hover { background: #22222e; border-color: #4a4a5a; }
 
     .error-message {
       display: none; background: rgba(255,107,107,0.1);
@@ -284,6 +334,63 @@
       font-size: 13px; margin-bottom: 16px;
     }
     .error-message.visible { display: block; }
+
+    /* ── History ── */
+    .history-section { margin-top: 8px; }
+    .history-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .history-header h3 {
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .btn-clear-history {
+      background: none; border: none; color: var(--text-muted);
+      font-size: 12px; cursor: pointer; padding: 4px 8px;
+      font-family: 'Inter', sans-serif; flex: none;
+    }
+    .btn-clear-history:hover { color: var(--danger); }
+
+    .history-list {
+      display: flex; flex-direction: column; gap: 6px;
+      max-height: 220px; overflow-y: auto;
+    }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: var(--bg-input);
+      border: 1px solid var(--bg-input); border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .history-item:hover { border-color: var(--border); background: #1e1e2a; }
+    .history-item-name {
+      font-size: 12px; font-weight: 500; color: var(--text-primary);
+      flex: 1; min-width: 0; margin-right: 12px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .history-item-price {
+      font-size: 12px; font-weight: 600; color: var(--sainsbury-orange);
+      flex-shrink: 0; margin-right: 12px;
+    }
+    .history-item-time {
+      font-size: 11px; color: var(--text-muted); flex-shrink: 0;
+    }
+    .history-item-delete {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; padding: 2px 6px; margin-left: 8px;
+      font-size: 14px; line-height: 1; border-radius: 4px;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .history-item-delete:hover { color: var(--danger); }
+
+    .empty-history {
+      text-align: center; padding: 20px;
+      font-size: 13px; color: var(--text-muted);
+    }
 
     /* spinner */
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -297,6 +404,7 @@
       .container { max-width: 100%; }
       .card { padding: 18px; }
       .header h1 { font-size: 24px; }
+      .btn-row { flex-direction: column; }
     }
   </style>
 </head>
@@ -336,10 +444,12 @@
 
       <div id="searchResults"></div>
 
-      <!-- Confirmation badge after picking a product -->
       <div id="selectedBadge">
         <img id="selectedBadgeImg" src="" alt="">
-        <span id="selectedBadgeName"></span>
+        <div class="selected-badge-info">
+          <div class="selected-badge-name" id="selectedBadgeName"></div>
+          <div class="selected-badge-price" id="selectedBadgePrice"></div>
+        </div>
         <button id="selectedBadgeClear" title="Clear selection">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -369,15 +479,21 @@
       </div>
 
       <div class="input-group">
-        <label for="price">Price in Pence</label>
-        <input
-          type="number"
-          id="price"
-          placeholder="e.g. 100 = £1.00"
-          min="10"
-          max="9999"
-        >
-        <div class="info-text warning">⚠ Prices below 10p may be flagged</div>
+        <label for="price">Price</label>
+        <div class="price-wrap">
+          <span class="pound-sign">£</span>
+          <input
+            type="text"
+            id="price"
+            placeholder="e.g. 1.50"
+            inputmode="decimal"
+            autocomplete="off"
+          >
+        </div>
+        <div class="info-text" id="priceInfo">
+          <span class="price-preview" id="pricePreview"></span>
+        </div>
+        <div class="info-text warning">⚠ Prices below £0.10 may be flagged</div>
       </div>
 
       <button class="btn-generate" onclick="generateBarcode()">
@@ -395,19 +511,51 @@
     <!-- Output -->
     <div class="barcode-output" id="barcodeOutput">
       <div class="card">
+        <div class="barcode-product-label" id="barcodeLabel">
+          <div class="bpl-name" id="barcodeLabelName"></div>
+          <div class="bpl-price" id="barcodeLabelPrice"></div>
+        </div>
         <div class="barcode-wrapper">
           <canvas id="barcodeCanvas"></canvas>
         </div>
-        <a id="downloadLink" download="sainsbury-barcode.png">
-          <button class="btn-download">
+        <div class="barcode-digits-copy" id="copyBarcode" title="Tap to copy">
+          <span class="digits" id="barcodeDigitsText"></span>
+          <svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </div>
+        <div class="btn-row">
+          <a id="downloadLink" download="sainsbury-barcode.png" class="btn-download">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            Download PNG
+            Download
+          </a>
+          <button class="btn-share" id="shareBtn" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/>
+              <circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            Share
           </button>
-        </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card history-section" id="historySection">
+      <div class="history-header">
+        <h3>Recent</h3>
+        <button class="btn-clear-history" id="clearHistoryBtn">Clear</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-history">No barcodes generated yet</div>
       </div>
     </div>
   </div>
@@ -420,19 +568,16 @@
 
     async function fetchSainsburys(q) {
       const url = `${API_BASE}/api/sainsburys?q=${encodeURIComponent(q)}&page_size=24`;
-
       const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 120000);  // Chrome boot + Akamai on free tier can take ~60s
+      const t = setTimeout(() => controller.abort(), 120000);
 
       try {
         const res = await fetch(url, { signal: controller.signal });
         clearTimeout(t);
-
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.detail || `API returned ${res.status}`);
         }
-
         const data = await res.json();
         return {
           products: (data.products || []).map(p => ({
@@ -459,11 +604,11 @@
 
     let debounceTimer = null;
     let currentQuery  = '';
+    let selectedProduct = null;
 
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.trim();
       searchClear.classList.toggle('visible', q.length > 0);
-
       clearTimeout(debounceTimer);
 
       if (!q) {
@@ -474,7 +619,7 @@
       showStatus('<span class="spinner"></span> <span style="margin-left:8px">Searching Sainsbury\'s — first search may take up to a minute...</span>');
       searchResults.classList.add('visible');
 
-      debounceTimer = setTimeout(() => doSearch(q), 350);
+      debounceTimer = setTimeout(() => doSearch(q), 800);
     });
 
     searchClear.addEventListener('click', () => {
@@ -500,7 +645,6 @@
 
       try {
         const data = await fetchSainsburys(q);
-
         if (q !== currentQuery) return;
 
         const products = (data.products || [])
@@ -508,7 +652,8 @@
           .map(p => ({
             name:  p.name  || 'Unknown product',
             image: p.image || '',
-            price: p.price != null ? `£${Number(p.price).toFixed(2)}` : '',
+            price: p.price != null ? p.price : null,
+            priceText: p.price != null ? `£${Number(p.price).toFixed(2)}` : '',
             brand: p.brand || '',
             ean:   p.ean,
           }));
@@ -519,7 +664,6 @@
         }
 
         renderResults(products);
-
       } catch (err) {
         if (q !== currentQuery) return;
         showStatus(`<span style="color:var(--danger)">⚠ Search failed — ${err.message}</span>`);
@@ -539,7 +683,7 @@
             <div class="product-info">
               <div class="product-name">${esc(p.name)}</div>
               <div class="product-meta">
-                ${p.price ? `<span class="product-price">${esc(p.price)}</span>` : ''}
+                ${p.priceText ? `<span class="product-price">${esc(p.priceText)}</span>` : ''}
                 ${p.brand ? `<span class="product-gtin" style="color:var(--text-secondary)">${esc(p.brand)}</span>` : ''}
                 ${p.ean   ? `<span class="product-gtin">${esc(p.ean)}</span>`   : ''}
               </div>
@@ -556,31 +700,50 @@
     }
 
     function selectProduct(p) {
-      // Fill the barcode field
-      if (p.ean) {
-        document.getElementById('productCode').value = p.ean;
-      }
+      selectedProduct = p;
 
-      // Show confirmation badge
+      if (p.ean) document.getElementById('productCode').value = p.ean;
+
       document.getElementById('selectedBadgeName').textContent = p.name;
+      document.getElementById('selectedBadgePrice').textContent = p.priceText || '';
       const img = document.getElementById('selectedBadgeImg');
       img.src = p.image || '';
       img.style.display = p.image ? '' : 'none';
       selectedBadge.classList.add('visible');
 
-      // Collapse results
       hideResults();
       searchInput.value = '';
       searchClear.classList.remove('visible');
 
-      // Jump to price field
       document.getElementById('price').focus();
     }
 
     document.getElementById('selectedBadgeClear').addEventListener('click', () => {
       selectedBadge.classList.remove('visible');
+      selectedProduct = null;
       document.getElementById('productCode').value = '';
       searchInput.focus();
+    });
+
+    // ── Price input (£ format) ────────────────────────────────────────────────
+    const priceInput   = document.getElementById('price');
+    const pricePreview = document.getElementById('pricePreview');
+
+    priceInput.addEventListener('input', () => {
+      let val = priceInput.value.replace(/[^0-9.]/g, '');
+      // Only allow one decimal point
+      const parts = val.split('.');
+      if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+      // Limit to 2 decimal places
+      if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].slice(0, 2);
+      priceInput.value = val;
+
+      const pence = Math.round(parseFloat(val) * 100);
+      if (!isNaN(pence) && pence > 0) {
+        pricePreview.textContent = `= ${pence}p`;
+      } else {
+        pricePreview.textContent = '';
+      }
     });
 
     // ── Barcode generation ────────────────────────────────────────────────────
@@ -607,18 +770,21 @@
       setTimeout(() => el.classList.remove('visible'), 4000);
     }
 
+    let lastGeneratedBarcode = '';
+
     function generateBarcode() {
       document.getElementById('errorMessage').classList.remove('visible');
 
       const productInput = document.getElementById('productCode').value.trim();
-      const priceInput   = parseInt(document.getElementById('price').value, 10);
+      const priceVal     = parseFloat(priceInput.value);
+      const priceInPence = Math.round(priceVal * 100);
 
       if (!productInput || productInput.length < 12) {
         showError('Please enter or select a product barcode (12–13 digits)');
         return;
       }
-      if (isNaN(priceInput) || priceInput < 10 || priceInput > 9999) {
-        showError('Price must be between 10p and £99.99');
+      if (isNaN(priceInPence) || priceInPence < 10 || priceInPence > 9999) {
+        showError('Price must be between £0.10 and £99.99');
         return;
       }
 
@@ -626,10 +792,11 @@
       if (productDigits.length === 14) productDigits = productDigits.slice(0, -1);
       productDigits = padLeft(productDigits, 13);
 
-      const paddedPrice = padLeft(priceInput, 6);
+      const paddedPrice = padLeft(priceInPence, 6);
       const baseNumber  = `91${productDigits}${paddedPrice}`;
       const checkDigit  = calculateCheckDigit(baseNumber);
       const fullBarcode = `${baseNumber}${checkDigit}`;
+      lastGeneratedBarcode = fullBarcode;
 
       const canvas = document.getElementById('barcodeCanvas');
       canvas.width  = 600;
@@ -644,24 +811,138 @@
         margin:       10,
       });
 
+      // Show product info above barcode
+      const labelName  = document.getElementById('barcodeLabelName');
+      const labelPrice = document.getElementById('barcodeLabelPrice');
+      const prodName   = selectedProduct ? selectedProduct.name : 'Manual entry';
+      labelName.textContent  = prodName;
+      labelPrice.textContent = `Custom price: £${priceVal.toFixed(2)}`;
+
+      // Copy digits
+      document.getElementById('barcodeDigitsText').textContent = fullBarcode;
+
+      // Download link
       const link = document.getElementById('downloadLink');
       link.href     = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-      link.download = `sainsbury-${productDigits}-${priceInput}p.png`;
+      link.download = `sainsbury-${productDigits}-${priceInPence}p.png`;
+
+      // Show share button if supported
+      if (navigator.share) {
+        document.getElementById('shareBtn').style.display = 'flex';
+      }
 
       const output = document.getElementById('barcodeOutput');
       output.classList.add('visible');
       output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Add to history
+      addToHistory({
+        name: prodName,
+        ean: productInput,
+        pricePounds: priceVal.toFixed(2),
+        pricePence: priceInPence,
+        barcode: fullBarcode,
+      });
     }
 
+    // ── Copy barcode digits ──────────────────────────────────────────────────
+    document.getElementById('copyBarcode').addEventListener('click', () => {
+      if (!lastGeneratedBarcode) return;
+      navigator.clipboard.writeText(lastGeneratedBarcode).then(() => {
+        const el = document.getElementById('copyBarcode');
+        el.classList.add('copied');
+        const digits = document.getElementById('barcodeDigitsText');
+        const original = digits.textContent;
+        digits.textContent = 'Copied!';
+        setTimeout(() => {
+          el.classList.remove('copied');
+          digits.textContent = original;
+        }, 1500);
+      });
+    });
+
+    // ── Share ────────────────────────────────────────────────────────────────
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+      const canvas = document.getElementById('barcodeCanvas');
+      try {
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        const file = new File([blob], 'sainsbury-barcode.png', { type: 'image/png' });
+        await navigator.share({ files: [file], title: 'Sainsbury\'s Barcode' });
+      } catch (e) {
+        // User cancelled or not supported
+      }
+    });
+
+    // ── History ──────────────────────────────────────────────────────────────
+    let history = JSON.parse(localStorage.getItem('sains_history') || '[]');
+    const historyList     = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+    function addToHistory(item) {
+      history = history.filter(h => h.barcode !== item.barcode);
+      history.unshift({
+        ...item,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      });
+      if (history.length > 20) history.pop();
+      localStorage.setItem('sains_history', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      if (history.length === 0) {
+        historyList.innerHTML = '<div class="empty-history">No barcodes generated yet</div>';
+        return;
+      }
+      historyList.innerHTML = history.map((h, i) => `
+        <div class="history-item" data-index="${i}">
+          <span class="history-item-name">${esc(h.name)}</span>
+          <span class="history-item-price">£${h.pricePounds}</span>
+          <span class="history-item-time">${h.time}</span>
+          <button class="history-item-delete" data-index="${i}" title="Remove">×</button>
+        </div>
+      `).join('');
+
+      historyList.querySelectorAll('.history-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.classList.contains('history-item-delete')) return;
+          const h = history[el.dataset.index];
+          document.getElementById('productCode').value = h.ean;
+          priceInput.value = h.pricePounds;
+          priceInput.dispatchEvent(new Event('input'));
+          selectedProduct = { name: h.name };
+          generateBarcode();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      historyList.querySelectorAll('.history-item-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          history.splice(parseInt(btn.dataset.index), 1);
+          localStorage.setItem('sains_history', JSON.stringify(history));
+          renderHistory();
+        });
+      });
+    }
+
+    clearHistoryBtn.addEventListener('click', () => {
+      history = [];
+      localStorage.removeItem('sains_history');
+      renderHistory();
+    });
+
+    renderHistory();
+
     // Enter key shortcuts
-    document.getElementById('price').addEventListener('keypress', e => {
+    priceInput.addEventListener('keypress', e => {
       if (e.key === 'Enter') generateBarcode();
     });
     document.getElementById('productCode').addEventListener('keypress', e => {
-      if (e.key === 'Enter') document.getElementById('price').focus();
+      if (e.key === 'Enter') priceInput.focus();
     });
 
-    // ── Tiny escape helper ────────────────────────────────────────────────────
+    // ── Escape helper ────────────────────────────────────────────────────────
     function esc(str) {
       return String(str)
         .replace(/&/g, '&amp;')
