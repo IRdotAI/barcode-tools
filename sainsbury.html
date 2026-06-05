@@ -864,10 +864,16 @@
     // ── Share ────────────────────────────────────────────────────────────────
     document.getElementById('shareBtn').addEventListener('click', async () => {
       const canvas = document.getElementById('barcodeCanvas');
+      const prodName = selectedProduct ? selectedProduct.name : 'Barcode';
+      const priceText = `£${parseFloat(priceInput.value).toFixed(2)}`;
       try {
         const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
         const file = new File([blob], 'sainsbury-barcode.png', { type: 'image/png' });
-        await navigator.share({ files: [file], title: 'Sainsbury\'s Barcode' });
+        await navigator.share({
+          files: [file],
+          title: prodName,
+          text:  `${prodName} — ${priceText}`,
+        });
       } catch (e) {
         // User cancelled or not supported
       }
