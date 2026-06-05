@@ -375,10 +375,10 @@
           type="number"
           id="price"
           placeholder="e.g. 100 = £1.00"
-          min="30"
+          min="10"
           max="9999"
         >
-        <div class="info-text warning">⚠ Prices below 30p may be flagged</div>
+        <div class="info-text warning">⚠ Prices below 10p may be flagged</div>
       </div>
 
       <button class="btn-generate" onclick="generateBarcode()">
@@ -618,8 +618,8 @@
         showError('Please enter or select a product barcode (12–13 digits)');
         return;
       }
-      if (isNaN(priceInput) || priceInput < 30 || priceInput > 9999) {
-        showError('Price must be between 30p and £99.99');
+      if (isNaN(priceInput) || priceInput < 10 || priceInput > 9999) {
+        showError('Price must be between 10p and £99.99');
         return;
       }
 
