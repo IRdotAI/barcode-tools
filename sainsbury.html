@@ -91,7 +91,6 @@
       letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px;
     }
 
-    /* ── Search input ── */
     .search-wrap { position: relative; }
     .search-wrap svg.search-icon {
       position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
@@ -121,7 +120,6 @@
     .search-clear:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
     .search-clear.visible { display: flex; align-items: center; justify-content: center; }
 
-    /* ── Results list ── */
     #searchResults {
       margin-top: 14px; display: none; flex-direction: column; gap: 8px;
       max-height: 400px; overflow-y: auto;
@@ -185,7 +183,6 @@
       background: rgba(108,92,231,0.2); border-color: var(--accent);
     }
 
-    /* ── Selected product badge ── */
     #selectedBadge {
       display: none; align-items: center; gap: 10px;
       padding: 10px 14px; background: rgba(240,108,0,0.08);
@@ -214,7 +211,6 @@
     }
     #selectedBadgeClear:hover { color: var(--danger); }
 
-    /* ── Form inputs ── */
     .input-group { margin-bottom: 18px; }
     .input-group:last-of-type { margin-bottom: 0; }
     .input-group label {
@@ -257,7 +253,6 @@
       transition: color 0.2s;
     }
 
-    /* ── Risk indicator ── */
     .risk-indicator {
       display: none; align-items: center; gap: 8px;
       padding: 10px 14px; border-radius: 10px;
@@ -292,7 +287,6 @@
     }
     .risk-indicator.risk-red .risk-dot { background: #ff6b6b; box-shadow: 0 0 6px rgba(255, 107, 107, 0.5); }
 
-    /* ── Generate button ── */
     .btn-generate {
       width: 100%; padding: 14px 20px; border: none;
       border-radius: var(--radius); background: var(--sainsbury-orange);
@@ -308,7 +302,6 @@
     .btn-generate:active:not(:disabled) { transform: translateY(0); }
     .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── Barcode output ── */
     .barcode-output { display: none; animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
     .barcode-output.visible { display: block; }
 
@@ -370,7 +363,6 @@
     }
     .error-message.visible { display: block; }
 
-    /* ── History ── */
     .history-section { margin-top: 8px; }
     .history-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -427,7 +419,6 @@
       font-size: 13px; color: var(--text-muted);
     }
 
-    /* spinner */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
       display: inline-block; width: 16px; height: 16px;
@@ -453,7 +444,6 @@
       <p>Search for a product, then encode a custom price</p>
     </div>
 
-    <!-- Step 1: Product Search -->
     <div class="card">
       <div class="section-label">Step 1 — Find a product</div>
 
@@ -494,7 +484,6 @@
       </div>
     </div>
 
-    <!-- Step 2: Price + generate -->
     <div class="card">
       <div class="section-label">Step 2 — Set a price &amp; generate</div>
 
@@ -548,7 +537,6 @@
       </button>
     </div>
 
-    <!-- Output -->
     <div class="barcode-output" id="barcodeOutput">
       <div class="card">
         <div class="barcode-product-label" id="barcodeLabel">
@@ -588,7 +576,6 @@
       </div>
     </div>
 
-    <!-- History -->
     <div class="card history-section" id="historySection">
       <div class="history-header">
         <h3>Recent</h3>
@@ -601,7 +588,6 @@
   </div>
 
   <script>
-    // ── Sainsbury's product search via Playwright backend ────────────────────────
     const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:8000'
       : 'https://sainsburys-api.onrender.com';
@@ -636,7 +622,6 @@
       }
     }
 
-    // ── Search ────────────────────────────────────────────────────────────────
     const searchInput   = document.getElementById('searchInput');
     const searchClear   = document.getElementById('searchClear');
     const searchResults = document.getElementById('searchResults');
@@ -755,7 +740,6 @@
       searchInput.value = '';
       searchClear.classList.remove('visible');
 
-      // Update risk if price is already entered
       const existingPrice = parseFloat(priceInput.value);
       if (!isNaN(existingPrice)) updateRiskIndicator(existingPrice);
 
@@ -770,7 +754,6 @@
       searchInput.focus();
     });
 
-    // ── Price input (£ format) ────────────────────────────────────────────────
     const priceInput   = document.getElementById('price');
     const pricePreview = document.getElementById('pricePreview');
 
@@ -779,7 +762,6 @@
     const riskPct       = document.getElementById('riskPct');
 
     function updateRiskIndicator(customPrice) {
-      // Need a selected product with a real price to compare
       if (!selectedProduct || selectedProduct.price == null || isNaN(customPrice) || customPrice <= 0) {
         riskIndicator.classList.remove('visible', 'risk-green', 'risk-yellow', 'risk-red');
         return;
@@ -793,7 +775,6 @@
 
       const discount = ((realPrice - customPrice) / realPrice) * 100;
 
-      // If custom price is higher or equal, no risk
       if (discount <= 0) {
         riskIndicator.className = 'risk-indicator visible risk-green';
         riskText.textContent = 'Price is at or above retail — no flags';
@@ -820,10 +801,8 @@
 
     priceInput.addEventListener('input', () => {
       let val = priceInput.value.replace(/[^0-9.]/g, '');
-      // Only allow one decimal point
       const parts = val.split('.');
       if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
-      // Limit to 2 decimal places
       if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].slice(0, 2);
       priceInput.value = val;
 
@@ -837,7 +816,6 @@
       updateRiskIndicator(parseFloat(val));
     });
 
-    // ── Barcode generation ────────────────────────────────────────────────────
     function padLeft(str, length) {
       return str.toString().padStart(length, '0');
     }
@@ -902,22 +880,18 @@
         margin:       10,
       });
 
-      // Show product info above barcode
       const labelName  = document.getElementById('barcodeLabelName');
       const labelPrice = document.getElementById('barcodeLabelPrice');
       const prodName   = selectedProduct ? selectedProduct.name : 'Manual entry';
       labelName.textContent  = prodName;
       labelPrice.textContent = `Custom price: £${priceVal.toFixed(2)}`;
 
-      // Copy digits
       document.getElementById('barcodeDigitsText').textContent = fullBarcode;
 
-      // Download link
       const link = document.getElementById('downloadLink');
       link.href     = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
       link.download = `sainsbury-${productDigits}-${priceInPence}p.png`;
 
-      // Show share button if supported
       if (navigator.share) {
         document.getElementById('shareBtn').style.display = 'flex';
       }
@@ -926,7 +900,6 @@
       output.classList.add('visible');
       output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-      // Add to history
       addToHistory({
         name: prodName,
         ean: productInput,
@@ -936,7 +909,6 @@
       });
     }
 
-    // ── Copy barcode digits ──────────────────────────────────────────────────
     document.getElementById('copyBarcode').addEventListener('click', () => {
       if (!lastGeneratedBarcode) return;
       navigator.clipboard.writeText(lastGeneratedBarcode).then(() => {
@@ -952,7 +924,6 @@
       });
     });
 
-    // ── Share ────────────────────────────────────────────────────────────────
     document.getElementById('shareBtn').addEventListener('click', async () => {
       const canvas = document.getElementById('barcodeCanvas');
       const prodName = selectedProduct ? selectedProduct.name : 'Barcode';
@@ -965,12 +936,9 @@
           title: `${prodName} — ${priceText}`,
           text:  `${prodName} — ${priceText}`,
         });
-      } catch (e) {
-        // User cancelled or not supported
-      }
+      } catch (e) {}
     });
 
-    // ── History ──────────────────────────────────────────────────────────────
     let history = JSON.parse(localStorage.getItem('sains_history') || '[]');
     const historyList     = document.getElementById('historyList');
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
@@ -1031,7 +999,6 @@
 
     renderHistory();
 
-    // Enter key shortcuts
     priceInput.addEventListener('keypress', e => {
       if (e.key === 'Enter') generateBarcode();
     });
@@ -1039,7 +1006,6 @@
       if (e.key === 'Enter') priceInput.focus();
     });
 
-    // ── Escape helper ────────────────────────────────────────────────────────
     function esc(str) {
       return String(str)
         .replace(/&/g, '&amp;')
