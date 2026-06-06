@@ -30,10 +30,7 @@
       --radius:  10px;
     }
 
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
+    html, body { height: 100%; overflow: hidden; }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -56,186 +53,140 @@
     .profile-container {
       position: relative; z-index: 1;
       width: 100%; max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      max-height: 100vh;
-      max-height: 100dvh;
+      display: flex; flex-direction: column;
+      max-height: 100vh; max-height: 100dvh;
     }
 
     .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; flex-shrink: 0;
     }
 
     .back-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: color 0.2s;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 13px; font-weight: 500; transition: color 0.2s;
     }
     .back-link:hover { color: var(--text-primary); }
 
-    .profile-header {
-      text-align: center;
-      margin-bottom: 12px;
-      flex-shrink: 0;
-    }
+    .profile-header { text-align: center; margin-bottom: 12px; flex-shrink: 0; }
 
     .avatar-wrap {
-      position: relative;
-      width: 64px; height: 64px;
-      margin: 0 auto 8px;
-      cursor: pointer;
+      position: relative; width: 64px; height: 64px;
+      margin: 0 auto 8px; cursor: pointer;
     }
-
     .avatar {
-      width: 64px; height: 64px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: 700; color: #fff;
-      text-transform: uppercase;
-      overflow: hidden;
-      border: 2px solid var(--border);
-      transition: border-color 0.2s;
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--accent); display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 700; color: #fff; text-transform: uppercase;
+      overflow: hidden; border: 2px solid var(--border); transition: border-color 0.2s;
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-wrap:hover .avatar { border-color: var(--accent); }
 
     .avatar-edit {
-      position: absolute;
-      bottom: -2px; right: -2px;
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid var(--bg-primary);
+      position: absolute; bottom: -2px; right: -2px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent); border: 2px solid var(--bg-primary);
       display: flex; align-items: center; justify-content: center;
       pointer-events: none;
     }
 
     .avatar-status {
-      text-align: center;
-      font-size: 11px;
-      color: var(--success);
-      min-height: 14px;
+      text-align: center; font-size: 11px; color: var(--success); min-height: 14px;
     }
 
-    .profile-header h1 {
-      font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
-      margin-bottom: 2px;
-    }
-
-    .profile-header p {
-      font-size: 12px; color: var(--text-muted);
-    }
+    .profile-header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 2px; }
+    .profile-header p { font-size: 12px; color: var(--text-muted); }
 
     .profile-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      flex-shrink: 0;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; flex-shrink: 0;
     }
-
     .profile-card h2 {
-      font-size: 11px; font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
     }
 
     .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
     }
     .info-row:last-child { border-bottom: none; }
-
-    .info-label {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .info-value {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-primary);
-      text-align: right;
-    }
+    .info-label { font-size: 13px; color: var(--text-secondary); }
+    .info-value { font-size: 13px; font-weight: 500; color: var(--text-primary); text-align: right; }
 
     .tier-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
     }
-
-    .tier-free {
-      background: rgba(136, 136, 160, 0.15);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .tier-premium {
-      background: rgba(108, 92, 231, 0.15);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
+    .tier-free { background: rgba(136,136,160,0.15); color: var(--text-secondary); border: 1px solid var(--border); }
+    .tier-premium { background: rgba(108,92,231,0.15); color: var(--accent); border: 1px solid var(--accent); }
 
     .upgrade-btn {
-      width: 100%;
-      padding: 11px 16px;
-      border: none;
-      border-radius: var(--radius);
-      background: var(--accent);
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      margin-top: 4px;
+      width: 100%; padding: 11px 16px; border: none; border-radius: var(--radius);
+      background: var(--accent); color: #fff; font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; margin-top: 4px;
     }
-    .upgrade-btn:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px var(--accent-glow);
-    }
+    .upgrade-btn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
 
     .signout-btn {
-      width: 100%;
-      padding: 11px 16px;
-      border: 1px solid var(--danger);
-      border-radius: var(--radius);
-      background: rgba(255,107,107,0.08);
-      color: var(--danger);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      flex-shrink: 0;
+      width: 100%; padding: 11px 16px; border: 1px solid var(--danger); border-radius: var(--radius);
+      background: rgba(255,107,107,0.08); color: var(--danger); font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; flex-shrink: 0;
     }
     .signout-btn:hover { background: rgba(255,107,107,0.18); }
 
-    .profile-footer {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 11px;
-      color: var(--text-muted);
-      flex-shrink: 0;
+    .profile-footer { text-align: center; margin-top: 10px; font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+    .crop-overlay {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.85); align-items: center; justify-content: center;
+      flex-direction: column; padding: 20px;
     }
+    .crop-overlay.visible { display: flex; }
+
+    .crop-title {
+      color: var(--text-primary); font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    }
+
+    .crop-area {
+      position: relative; width: 280px; height: 280px;
+      border-radius: 16px; overflow: hidden; background: #000;
+      touch-action: none;
+    }
+    .crop-area img {
+      position: absolute; transform-origin: 0 0;
+      max-width: none; max-height: none;
+    }
+    .crop-circle {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
+
+    .crop-controls {
+      display: flex; align-items: center; gap: 12px; margin-top: 16px; width: 280px;
+    }
+    .crop-controls label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .crop-controls input[type="range"] {
+      flex: 1; accent-color: var(--accent); height: 4px;
+    }
+
+    .crop-buttons {
+      display: flex; gap: 10px; margin-top: 16px;
+    }
+    .crop-btn {
+      padding: 10px 28px; border-radius: var(--radius); font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .crop-btn-cancel {
+      background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border);
+    }
+    .crop-btn-save {
+      background: var(--accent); color: #fff;
+    }
+    .crop-btn-save:hover { background: var(--accent-hover); }
 
     @media (max-height: 700px) {
       .profile-header { margin-bottom: 8px; }
@@ -248,6 +199,8 @@
       .info-label, .info-value { font-size: 12px; }
       .upgrade-btn, .signout-btn { padding: 9px 14px; font-size: 12px; }
       .top-bar { margin-bottom: 8px; }
+      .crop-area { width: 240px; height: 240px; }
+      .crop-controls { width: 240px; }
     }
 
     @media (max-height: 600px) {
@@ -256,6 +209,8 @@
       .avatar { width: 44px; height: 44px; font-size: 18px; }
       .profile-card { padding: 8px 12px; margin-bottom: 6px; border-radius: 10px; }
       .info-row { padding: 4px 0; }
+      .crop-area { width: 200px; height: 200px; }
+      .crop-controls { width: 200px; }
     }
   </style>
 </head>
@@ -311,9 +266,22 @@
     </div>
 
     <button class="signout-btn" id="signoutBtn">Sign Out</button>
+    <div class="profile-footer">Powered by RdotA</div>
+  </div>
 
-    <div class="profile-footer">
-      Powered by RdotA
+  <div class="crop-overlay" id="cropOverlay">
+    <div class="crop-title">Crop Profile Picture</div>
+    <div class="crop-area" id="cropArea">
+      <img id="cropImg" src="">
+      <div class="crop-circle"></div>
+    </div>
+    <div class="crop-controls">
+      <label>Zoom</label>
+      <input type="range" id="cropZoom" min="100" max="400" value="100">
+    </div>
+    <div class="crop-buttons">
+      <button class="crop-btn crop-btn-cancel" id="cropCancel">Cancel</button>
+      <button class="crop-btn crop-btn-save" id="cropSave">Save</button>
     </div>
   </div>
 
@@ -321,35 +289,28 @@
     (function() {
       var sb = null;
       var currentUser = null;
+      var cropState = { img: null, scale: 1, offsetX: 0, offsetY: 0, dragging: false, lastX: 0, lastY: 0 };
 
       try {
         sb = window.supabase.createClient(
           'https://dvzwupfryffqptjyxlmn.supabase.co',
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY'
         );
-      } catch(e) {
-        console.error('Supabase init failed:', e);
-      }
+      } catch(e) { console.error('Supabase init failed:', e); }
 
       if (!sb) return;
 
-      function setAvatar(url) {
+      function setAvatar(dataUrl) {
         var el = document.getElementById('avatar');
-        if (url) {
-          el.innerHTML = '<img src="' + url + '" alt="avatar">';
-        }
+        el.innerHTML = '<img src="' + dataUrl + '" alt="avatar">';
       }
 
       function setInitialAvatar(email) {
-        var el = document.getElementById('avatar');
-        el.textContent = email.charAt(0).toUpperCase();
+        document.getElementById('avatar').textContent = email.charAt(0).toUpperCase();
       }
 
       sb.auth.getSession().then(function(res) {
-        if (!res.data || !res.data.session) {
-          window.location.href = 'login.html';
-          return;
-        }
+        if (!res.data || !res.data.session) { window.location.href = 'login.html'; return; }
 
         currentUser = res.data.session.user;
         var email = currentUser.email || '—';
@@ -358,11 +319,7 @@
         var tier = (currentUser.user_metadata && currentUser.user_metadata.tier) || 'free';
         var avatarUrl = (currentUser.user_metadata && currentUser.user_metadata.avatar_url) || '';
 
-        if (avatarUrl) {
-          setAvatar(avatarUrl);
-        } else {
-          setInitialAvatar(email);
-        }
+        avatarUrl ? setAvatar(avatarUrl) : setInitialAvatar(email);
 
         document.getElementById('displayEmail').textContent = email;
         document.getElementById('memberSince').textContent = 'Member since ' + created.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -372,9 +329,7 @@
 
         if (tier === 'premium') {
           var badge = document.getElementById('tierBadge');
-          badge.textContent = 'Premium';
-          badge.classList.remove('tier-free');
-          badge.classList.add('tier-premium');
+          badge.textContent = 'Premium'; badge.classList.remove('tier-free'); badge.classList.add('tier-premium');
           document.getElementById('upgradeBtn').style.display = 'none';
           document.getElementById('upgradeRow').style.display = 'none';
         }
@@ -386,47 +341,147 @@
 
       document.getElementById('avatarInput').addEventListener('change', function(e) {
         var file = e.target.files[0];
-        if (!file || !currentUser) return;
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          openCrop(ev.target.result);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+      });
+
+      function openCrop(dataUrl) {
+        var overlay = document.getElementById('cropOverlay');
+        var img = document.getElementById('cropImg');
+        var zoom = document.getElementById('cropZoom');
+
+        img.onload = function() {
+          var area = document.getElementById('cropArea');
+          var areaW = area.offsetWidth;
+          var areaH = area.offsetHeight;
+          var imgW = img.naturalWidth;
+          var imgH = img.naturalHeight;
+          var fitScale = Math.max(areaW / imgW, areaH / imgH);
+
+          cropState.baseScale = fitScale;
+          cropState.scale = 1;
+          cropState.offsetX = (areaW - imgW * fitScale) / 2;
+          cropState.offsetY = (areaH - imgH * fitScale) / 2;
+          cropState.imgW = imgW;
+          cropState.imgH = imgH;
+          cropState.areaW = areaW;
+          cropState.areaH = areaH;
+
+          zoom.value = 100;
+          updateCropTransform();
+        };
+        img.src = dataUrl;
+        overlay.classList.add('visible');
+      }
+
+      function updateCropTransform() {
+        var img = document.getElementById('cropImg');
+        var s = cropState.baseScale * cropState.scale;
+        img.style.transform = 'translate(' + cropState.offsetX + 'px,' + cropState.offsetY + 'px) scale(' + s + ')';
+      }
+
+      document.getElementById('cropZoom').addEventListener('input', function(e) {
+        var oldScale = cropState.scale;
+        cropState.scale = parseInt(e.target.value) / 100;
+
+        var centerX = cropState.areaW / 2;
+        var centerY = cropState.areaH / 2;
+        var ratio = cropState.scale / oldScale;
+        cropState.offsetX = centerX - (centerX - cropState.offsetX) * ratio;
+        cropState.offsetY = centerY - (centerY - cropState.offsetY) * ratio;
+
+        updateCropTransform();
+      });
+
+      var cropArea = document.getElementById('cropArea');
+
+      function getPointerPos(e) {
+        var t = e.touches ? e.touches[0] : e;
+        return { x: t.clientX, y: t.clientY };
+      }
+
+      cropArea.addEventListener('mousedown', startDrag);
+      cropArea.addEventListener('touchstart', startDrag, { passive: false });
+      window.addEventListener('mousemove', moveDrag);
+      window.addEventListener('touchmove', moveDrag, { passive: false });
+      window.addEventListener('mouseup', endDrag);
+      window.addEventListener('touchend', endDrag);
+
+      function startDrag(e) {
+        e.preventDefault();
+        var p = getPointerPos(e);
+        cropState.dragging = true;
+        cropState.lastX = p.x;
+        cropState.lastY = p.y;
+      }
+
+      function moveDrag(e) {
+        if (!cropState.dragging) return;
+        e.preventDefault();
+        var p = getPointerPos(e);
+        cropState.offsetX += p.x - cropState.lastX;
+        cropState.offsetY += p.y - cropState.lastY;
+        cropState.lastX = p.x;
+        cropState.lastY = p.y;
+        updateCropTransform();
+      }
+
+      function endDrag() { cropState.dragging = false; }
+
+      document.getElementById('cropCancel').addEventListener('click', function() {
+        document.getElementById('cropOverlay').classList.remove('visible');
+      });
+
+      document.getElementById('cropSave').addEventListener('click', function() {
+        var size = 256;
+        var canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        var ctx = canvas.getContext('2d');
+
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.clip();
+
+        var s = cropState.baseScale * cropState.scale;
+        var scaleRatio = size / cropState.areaW;
+        var dx = cropState.offsetX * scaleRatio;
+        var dy = cropState.offsetY * scaleRatio;
+        var dw = cropState.imgW * s * scaleRatio;
+        var dh = cropState.imgH * s * scaleRatio;
+
+        var srcImg = document.getElementById('cropImg');
+        ctx.drawImage(srcImg, dx, dy, dw, dh);
+
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        document.getElementById('cropOverlay').classList.remove('visible');
 
         var statusEl = document.getElementById('avatarStatus');
-        statusEl.textContent = 'Uploading...';
+        statusEl.textContent = 'Saving...';
         statusEl.style.color = '#8888a0';
 
-        var ext = file.name.split('.').pop().toLowerCase();
-        var path = currentUser.id + '/avatar.' + ext;
-
-        sb.storage.from('avatars').upload(path, file, {
-          cacheControl: '3600',
-          upsert: true
-        }).then(function(uploadRes) {
-          if (uploadRes.error) {
-            statusEl.textContent = 'Upload failed — ' + uploadRes.error.message;
+        sb.auth.updateUser({
+          data: { avatar_url: dataUrl }
+        }).then(function(updateRes) {
+          if (updateRes.error) {
+            statusEl.textContent = 'Failed to save — ' + updateRes.error.message;
             statusEl.style.color = '#ff6b6b';
             return;
           }
-
-          var publicUrl = 'https://dvzwupfryffqptjyxlmn.supabase.co/storage/v1/object/public/avatars/' + path + '?t=' + Date.now();
-
-          sb.auth.updateUser({
-            data: { avatar_url: publicUrl }
-          }).then(function(updateRes) {
-            if (updateRes.error) {
-              statusEl.textContent = 'Saved but failed to update profile';
-              statusEl.style.color = '#ff6b6b';
-              return;
-            }
-            setAvatar(publicUrl);
-            statusEl.textContent = 'Updated!';
-            statusEl.style.color = '#00cec9';
-            setTimeout(function() { statusEl.textContent = ''; }, 2000);
-          });
+          setAvatar(dataUrl);
+          statusEl.textContent = 'Updated!';
+          statusEl.style.color = '#00cec9';
+          setTimeout(function() { statusEl.textContent = ''; }, 2000);
         });
       });
 
       document.getElementById('signoutBtn').addEventListener('click', function() {
-        sb.auth.signOut().then(function() {
-          window.location.href = 'login.html';
-        });
+        sb.auth.signOut().then(function() { window.location.href = 'login.html'; });
       });
 
       document.getElementById('upgradeBtn').addEventListener('click', function() {
@@ -434,10 +489,7 @@
       });
 
       document.getElementById('backLink').addEventListener('click', function(e) {
-        if (window.history.length > 1) {
-          e.preventDefault();
-          history.back();
-        }
+        if (window.history.length > 1) { e.preventDefault(); history.back(); }
       });
     })();
   </script>
