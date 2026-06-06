@@ -589,7 +589,7 @@
 
   <script>
     const BRAND_COLOR = '#f06c00';
-    const CARD_BG = '#f5f4f0';
+    const CARD_BG = '#f06c00';
 
     const logoImg = new Image();
     logoImg.crossOrigin = 'anonymous';
@@ -615,10 +615,10 @@
       const pH = fontSize + 24;
       const pW = tw + 36;
       const pX = align === 'right' ? x - pW : x;
-      ctx.fillStyle = BRAND_COLOR;
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
       roundRect(ctx, pX, y, pW, pH, 10);
       ctx.fill();
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = BRAND_COLOR;
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'left';
       ctx.fillText(text, pX + 18, y + pH / 2 + 1);
