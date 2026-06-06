@@ -437,10 +437,66 @@
       .header h1 { font-size: 24px; }
       .btn-row { flex-direction: column; }
     }
+
+    .disclaimer-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .disclaimer-overlay.hidden { display: none; }
+    .disclaimer-box {
+      background: var(--bg-card); border: 1px solid var(--danger);
+      border-radius: 16px; padding: 32px; max-width: 480px; width: 100%;
+      text-align: center;
+    }
+    .disclaimer-icon {
+      font-size: 40px; margin-bottom: 16px;
+    }
+    .disclaimer-box h2 {
+      font-size: 20px; font-weight: 700; color: var(--danger);
+      margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .disclaimer-box p {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .disclaimer-box p strong { color: var(--text-primary); }
+    .disclaimer-btn {
+      margin-top: 20px; padding: 13px 32px; border: none;
+      border-radius: var(--radius); background: var(--danger);
+      color: #fff; font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: all 0.25s ease; opacity: 0.3;
+      pointer-events: none;
+    }
+    .disclaimer-btn.active {
+      opacity: 1; pointer-events: auto;
+    }
+    .disclaimer-btn.active:hover {
+      background: #e55a5a; transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+    }
   </style>
 </head>
 
 <body>
+  <div class="disclaimer-overlay" id="disclaimerOverlay">
+    <div class="disclaimer-box">
+      <div class="disclaimer-icon">⚠️</div>
+      <h2>Legal Disclaimer</h2>
+      <p>This tool is provided <strong>strictly for educational and informational purposes only</strong>. Generating or using fraudulent barcodes to misrepresent pricing at any retail establishment constitutes <strong>fraud under the Fraud Act 2006</strong> and is a criminal offence punishable by law.</p>
+      <p>By proceeding, you acknowledge that <strong>you assume full legal responsibility</strong> for any use of this tool. The developer accepts <strong>no liability whatsoever</strong> for any actions taken by users of this software.</p>
+      <p style="color:var(--text-muted); font-size:12px; margin-bottom:0;">Use of this tool constitutes acceptance of these terms.</p>
+      <button class="disclaimer-btn" id="disclaimerBtn" onclick="dismissDisclaimer()">I Understand & Accept (<span id="disclaimerCount">8</span>)</button>
+    </div>
+  </div>
+
   <div class="container">
     <a href="generators.html" class="back-link">← Back</a>
 
@@ -1168,6 +1224,33 @@
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    (function() {
+      const overlay = document.getElementById('disclaimerOverlay');
+      const btn = document.getElementById('disclaimerBtn');
+      const countEl = document.getElementById('disclaimerCount');
+
+      if (localStorage.getItem('disclaimer_accepted')) {
+        overlay.classList.add('hidden');
+        return;
+      }
+
+      let remaining = 8;
+      const timer = setInterval(() => {
+        remaining--;
+        countEl.textContent = remaining;
+        if (remaining <= 0) {
+          clearInterval(timer);
+          btn.classList.add('active');
+          btn.textContent = 'I Understand & Accept';
+        }
+      }, 1000);
+    })();
+
+    function dismissDisclaimer() {
+      localStorage.setItem('disclaimer_accepted', '1');
+      document.getElementById('disclaimerOverlay').classList.add('hidden');
     }
   </script>
 </body>
