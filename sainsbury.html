@@ -644,8 +644,8 @@
       ctx.fillStyle = CARD_BG;
       ctx.fillRect(0, 0, W, H);
 
-      drawLabel(ctx, "Sainsbury's", PAD, 95, 28, 'left');
-      drawLabel(ctx, priceStr, W - PAD, 95, 28, 'right');
+      drawLabel(ctx, "Sainsbury's", PAD, 95, 42, 'left');
+      drawLabel(ctx, priceStr, W - PAD, 95, 42, 'right');
 
       const logoSize = 240;
       const logoX = (W - logoSize) / 2;
@@ -669,12 +669,12 @@
       }
 
       const prodY = 550;
-      ctx.font = '700 24px Inter, -apple-system, sans-serif';
+      ctx.font = '700 36px Inter, -apple-system, sans-serif';
       const prodLines = wrapText(ctx, productName, W - PAD * 2);
       for (let i = 0; i < Math.min(prodLines.length, 2); i++) {
         let display = prodLines[i];
         if (i === 1 && prodLines.length > 2) display = display.slice(0, -3) + '...';
-        drawLabel(ctx, display, PAD, prodY + i * 34, 24, 'left');
+        drawLabel(ctx, display, PAD, prodY + i * 46, 36, 'left');
       }
 
       const bcCardX = PAD;
