@@ -602,7 +602,7 @@
 
     const brandImg = new Image();
     brandImg.crossOrigin = 'anonymous';
-    brandImg.src = 'RdotA.png';
+    brandImg.src = 'RAIO.gif';
 
     function roundRect(ctx, x, y, w, h, r) {
       ctx.beginPath();
@@ -723,16 +723,14 @@
       ctx.textAlign = 'left';
 
       if (brandImg.complete && brandImg.naturalWidth > 0) {
-        const ratio = brandImg.naturalWidth / brandImg.naturalHeight;
-        const bH = 40;
-        const bW = bH * ratio;
+        const bSize = 44;
         const bX = PAD;
-        const bY = H - 50 - bH;
+        const bY = H - 50 - bSize;
         ctx.save();
-        ctx.globalAlpha = 0.55;
-        roundRect(ctx, bX, bY, bW, bH, 8);
+        ctx.globalAlpha = 0.7;
+        roundRect(ctx, bX, bY, bSize, bSize, 10);
         ctx.clip();
-        ctx.drawImage(brandImg, bX, bY, bW, bH);
+        ctx.drawImage(brandImg, bX, bY, bSize, bSize);
         ctx.restore();
       }
 
@@ -792,7 +790,7 @@
         return;
       }
 
-      showStatus('<span class="spinner"></span> <span style="margin-left:8px">Searching Sainsbury\'s — first search may take up to a minute...</span>');
+      showStatus('<img src="RAIO.gif" style="width:28px;height:28px;border-radius:6px;vertical-align:middle"> <span style="margin-left:8px">Searching Sainsbury\'s — first search may take up to a minute...</span>');
       searchResults.classList.add('visible');
 
       debounceTimer = setTimeout(() => doSearch(q), 800);
