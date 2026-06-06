@@ -5,6 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sainsbury's Barcode Generator</title>
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="RdotA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -595,6 +600,10 @@
     logoImg.crossOrigin = 'anonymous';
     logoImg.src = 'sainsbury.png';
 
+    const brandImg = new Image();
+    brandImg.crossOrigin = 'anonymous';
+    brandImg.src = 'RdotA.png';
+
     function roundRect(ctx, x, y, w, h, r) {
       ctx.beginPath();
       ctx.moveTo(x + r, y);
@@ -712,6 +721,17 @@
       ctx.textBaseline = 'top';
       ctx.fillText(barcodeData, W / 2, bcDrawY + bcDrawH + 20);
       ctx.textAlign = 'left';
+
+      if (brandImg.complete && brandImg.naturalWidth > 0) {
+        const ratio = brandImg.naturalWidth / brandImg.naturalHeight;
+        const bH = 36;
+        const bW = bH * ratio;
+        const bX = W - PAD - bW;
+        const bY = H - 50 - bH;
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(brandImg, bX, bY, bW, bH);
+        ctx.globalAlpha = 1.0;
+      }
 
       return c;
     }
@@ -1143,6 +1163,10 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
     }
   </script>
 </body>

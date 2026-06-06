@@ -1,0 +1,18 @@
+{
+  "name": "Barcode Tools",
+  "short_name": "Barcodes",
+  "description": "Generate store barcodes with custom prices",
+  "start_url": "./sainsbury.html",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "RdotA.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
