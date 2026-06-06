@@ -504,10 +504,7 @@
   <div class="container">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
       <a href="generators.html" class="back-link" style="margin-bottom:0">← Back</a>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <a href="profile.html" id="profileBtn" style="background:none; border:1px solid var(--border); color:var(--text-muted); font-family:'Inter',sans-serif; font-size:12px; font-weight:500; padding:6px 14px; border-radius:8px; cursor:pointer; transition:all 0.2s; text-decoration:none; display:none;">Profile</a>
-        <button id="logoutBtn" onclick="handleLogout()" style="background:none; border:1px solid var(--border); color:var(--text-muted); font-family:'Inter',sans-serif; font-size:12px; font-weight:500; padding:6px 14px; border-radius:8px; cursor:pointer; transition:all 0.2s; display:none;">Sign Out</button>
-      </div>
+      <a href="profile.html" id="profileBtn" style="background:none; border:1px solid var(--border); color:var(--text-muted); font-family:'Inter',sans-serif; font-size:12px; font-weight:500; padding:6px 14px; border-radius:8px; cursor:pointer; transition:all 0.2s; text-decoration:none; display:none;">Profile</a>
     </div>
 
     <div class="header">
@@ -668,14 +665,8 @@
         window.location.href = 'login.html';
         return;
       }
-      document.getElementById('logoutBtn').style.display = 'block';
       document.getElementById('profileBtn').style.display = 'block';
     });
-
-    async function handleLogout() {
-      await sb.auth.signOut();
-      window.location.href = 'login.html';
-    }
 
     const BRAND_COLOR = '#f06c00';
     const CARD_BG = '#f06c00';
