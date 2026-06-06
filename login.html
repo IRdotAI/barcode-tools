@@ -79,7 +79,7 @@
     }
     .auth-logo {
       width: 64px; height: 64px; border-radius: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 20px; object-fit: contain;
     }
     .auth-header h1 {
       font-size: 26px; font-weight: 700; letter-spacing: -0.5px;
@@ -339,7 +339,7 @@
             loginBtn.textContent = 'Sign In';
             return;
           }
-          window.location.href = 'sainsbury.html';
+          window.location.href = 'index.html';
         }).catch(function(err) {
           showError('Connection error — check your internet and try again.');
           loginBtn.disabled = false;
@@ -429,7 +429,7 @@
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY'
         );
         sb.auth.getSession().then(function(res) {
-          if (res.data && res.data.session) window.location.href = 'sainsbury.html';
+          if (res.data && res.data.session) window.location.href = 'index.html';
         });
       } catch(e) {
         console.error('Supabase init failed:', e);
