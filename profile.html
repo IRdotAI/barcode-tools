@@ -40,6 +40,9 @@
       align-items: flex-start;
       justify-content: center;
       padding: 24px;
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     body::before {
@@ -221,7 +224,7 @@
     .profile-footer {
       text-align: center;
       margin-top: 20px;
-      padding-bottom: 20px;
+      padding-bottom: 40px;
       font-size: 12px;
       color: var(--text-muted);
     }
@@ -235,7 +238,7 @@
 
 <body>
   <div class="profile-container">
-    <a href="javascript:history.back()" class="back-link">← Back</a>
+    <a href="generators.html" class="back-link" id="backLink">← Back</a>
 
     <div class="profile-header">
       <div class="avatar-wrap" id="avatarWrap" title="Change profile picture">
@@ -406,6 +409,13 @@
 
       document.getElementById('upgradeBtn').addEventListener('click', function() {
         alert('Premium coming soon — stay tuned!');
+      });
+
+      document.getElementById('backLink').addEventListener('click', function(e) {
+        if (window.history.length > 1) {
+          e.preventDefault();
+          history.back();
+        }
       });
     })();
   </script>
