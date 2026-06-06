@@ -31,14 +31,13 @@
       --radius:  12px;
     }
 
-    html, body { height: 100%; overflow: hidden; }
-
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-primary);
       color: var(--text-primary);
+      min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 24px;
     }
@@ -53,6 +52,7 @@
     .profile-container {
       position: relative; z-index: 1;
       width: 100%; max-width: 460px;
+      padding-top: 20px;
     }
 
     .back-link {
@@ -71,14 +71,38 @@
       margin-bottom: 28px;
     }
 
+    .avatar-wrap {
+      position: relative;
+      width: 80px; height: 80px;
+      margin: 0 auto 16px;
+      cursor: pointer;
+    }
+
     .avatar {
-      width: 72px; height: 72px;
+      width: 80px; height: 80px;
       border-radius: 50%;
       background: var(--accent);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-      font-size: 28px; font-weight: 700; color: #fff;
+      font-size: 30px; font-weight: 700; color: #fff;
       text-transform: uppercase;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .avatar img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .avatar-wrap:hover .avatar { border-color: var(--accent); }
+
+    .avatar-edit {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-primary);
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
     }
 
     .profile-header h1 {
@@ -186,9 +210,18 @@
       background: rgba(255,107,107,0.18);
     }
 
+    .avatar-status {
+      text-align: center;
+      font-size: 12px;
+      color: var(--success);
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
     .profile-footer {
       text-align: center;
       margin-top: 20px;
+      padding-bottom: 20px;
       font-size: 12px;
       color: var(--text-muted);
     }
@@ -205,9 +238,18 @@
     <a href="javascript:history.back()" class="back-link">← Back</a>
 
     <div class="profile-header">
-      <div class="avatar" id="avatar"></div>
+      <div class="avatar-wrap" id="avatarWrap" title="Change profile picture">
+        <div class="avatar" id="avatar"></div>
+        <div class="avatar-edit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="avatar-status" id="avatarStatus"></div>
       <h1 id="displayEmail">Loading...</h1>
       <p id="memberSince"></p>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none;">
     </div>
 
     <div class="profile-card">
@@ -252,6 +294,7 @@
   <script>
     (function() {
       var sb = null;
+      var currentUser = null;
 
       try {
         sb = window.supabase.createClient(
@@ -264,20 +307,38 @@
 
       if (!sb) return;
 
+      function setAvatar(url) {
+        var el = document.getElementById('avatar');
+        if (url) {
+          el.innerHTML = '<img src="' + url + '" alt="avatar">';
+        }
+      }
+
+      function setInitialAvatar(email) {
+        var el = document.getElementById('avatar');
+        var initial = email.charAt(0).toUpperCase();
+        el.textContent = initial;
+      }
+
       sb.auth.getSession().then(function(res) {
         if (!res.data || !res.data.session) {
           window.location.href = 'login.html';
           return;
         }
 
-        var user = res.data.session.user;
-        var email = user.email || '—';
-        var created = new Date(user.created_at);
-        var provider = (user.app_metadata && user.app_metadata.provider) || 'email';
-        var tier = (user.user_metadata && user.user_metadata.tier) || 'free';
+        currentUser = res.data.session.user;
+        var email = currentUser.email || '—';
+        var created = new Date(currentUser.created_at);
+        var provider = (currentUser.app_metadata && currentUser.app_metadata.provider) || 'email';
+        var tier = (currentUser.user_metadata && currentUser.user_metadata.tier) || 'free';
+        var avatarUrl = (currentUser.user_metadata && currentUser.user_metadata.avatar_url) || '';
 
-        var initial = email.charAt(0).toUpperCase();
-        document.getElementById('avatar').textContent = initial;
+        if (avatarUrl) {
+          setAvatar(avatarUrl);
+        } else {
+          setInitialAvatar(email);
+        }
+
         document.getElementById('displayEmail').textContent = email;
         document.getElementById('memberSince').textContent = 'Member since ' + created.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
         document.getElementById('emailValue').textContent = email;
@@ -292,6 +353,49 @@
           document.getElementById('upgradeBtn').style.display = 'none';
           document.getElementById('upgradeRow').style.display = 'none';
         }
+      });
+
+      document.getElementById('avatarWrap').addEventListener('click', function() {
+        document.getElementById('avatarInput').click();
+      });
+
+      document.getElementById('avatarInput').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file || !currentUser) return;
+
+        var statusEl = document.getElementById('avatarStatus');
+        statusEl.textContent = 'Uploading...';
+        statusEl.style.color = '#8888a0';
+
+        var ext = file.name.split('.').pop().toLowerCase();
+        var path = currentUser.id + '/avatar.' + ext;
+
+        sb.storage.from('avatars').upload(path, file, {
+          cacheControl: '3600',
+          upsert: true
+        }).then(function(uploadRes) {
+          if (uploadRes.error) {
+            statusEl.textContent = 'Upload failed — ' + uploadRes.error.message;
+            statusEl.style.color = '#ff6b6b';
+            return;
+          }
+
+          var publicUrl = 'https://dvzwupfryffqptjyxlmn.supabase.co/storage/v1/object/public/avatars/' + path + '?t=' + Date.now();
+
+          sb.auth.updateUser({
+            data: { avatar_url: publicUrl }
+          }).then(function(updateRes) {
+            if (updateRes.error) {
+              statusEl.textContent = 'Saved image but failed to update profile';
+              statusEl.style.color = '#ff6b6b';
+              return;
+            }
+            setAvatar(publicUrl);
+            statusEl.textContent = 'Profile picture updated!';
+            statusEl.style.color = '#00cec9';
+            setTimeout(function() { statusEl.textContent = ''; }, 3000);
+          });
+        });
       });
 
       document.getElementById('signoutBtn').addEventListener('click', function() {
