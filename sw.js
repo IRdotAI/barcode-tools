@@ -1,12 +1,12 @@
-const CACHE_NAME = 'barcode-tools-v1';
+const CACHE_NAME = 'barcode-tools-v2';
 const ASSETS = [
   './',
   './sainsbury.html',
   './sainsbury.png',
   './RdotA.png',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-  'https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js'
+  './icon-192.png',
+  './icon-512.png',
+  './manifest.json'
 ];
 
 self.addEventListener('install', e => {
@@ -31,7 +31,7 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => {
       const fetched = fetch(e.request).then(res => {
-        if (res && res.status === 200) {
+        if (res && res.status === 200 && res.type !== 'opaque') {
           const clone = res.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
         }
