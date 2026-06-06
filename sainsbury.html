@@ -715,7 +715,7 @@
       const bcDrawY = bcCardY + 50;
       ctx.drawImage(tempBC, bcDrawX, bcDrawY, bcDrawW, bcDrawH);
 
-      ctx.font = '600 20px Inter, monospace';
+      ctx.font = '700 20px Inter, monospace';
       ctx.fillStyle = '#444';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
@@ -724,13 +724,16 @@
 
       if (brandImg.complete && brandImg.naturalWidth > 0) {
         const ratio = brandImg.naturalWidth / brandImg.naturalHeight;
-        const bH = 36;
+        const bH = 40;
         const bW = bH * ratio;
-        const bX = W - PAD - bW;
+        const bX = PAD;
         const bY = H - 50 - bH;
-        ctx.globalAlpha = 0.5;
+        ctx.save();
+        ctx.globalAlpha = 0.55;
+        roundRect(ctx, bX, bY, bW, bH, 8);
+        ctx.clip();
         ctx.drawImage(brandImg, bX, bY, bW, bH);
-        ctx.globalAlpha = 1.0;
+        ctx.restore();
       }
 
       return c;
