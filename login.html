@@ -10,6 +10,16 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
+      });
+      caches.keys().then(function(names) {
+        names.forEach(function(n) { caches.delete(n); });
+      });
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -171,14 +181,14 @@
 
     <div class="auth-card">
       <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
-        <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+        <button class="auth-tab active" id="tabLogin">Sign In</button>
+        <button class="auth-tab" id="tabSignup">Sign Up</button>
       </div>
 
       <div class="auth-error" id="authError"></div>
       <div class="auth-success" id="authSuccess"></div>
 
-      <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+      <form class="auth-form active" id="loginForm">
         <div class="form-group">
           <label for="loginEmail">Email</label>
           <input type="email" id="loginEmail" placeholder="you@example.com" required autocomplete="email">
@@ -190,7 +200,7 @@
         <button type="submit" class="auth-btn" id="loginBtn">Sign In</button>
       </form>
 
-      <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+      <form class="auth-form" id="signupForm">
         <div class="form-group">
           <label for="signupEmail">Email</label>
           <input type="email" id="signupEmail" placeholder="you@example.com" required autocomplete="email">
@@ -213,137 +223,157 @@
   </div>
 
   <script>
-    let supabase = null;
+    (function() {
+      var sb = null;
+      var errEl = document.getElementById('authError');
+      var successEl = document.getElementById('authSuccess');
+      var tabLogin = document.getElementById('tabLogin');
+      var tabSignup = document.getElementById('tabSignup');
+      var loginForm = document.getElementById('loginForm');
+      var signupForm = document.getElementById('signupForm');
+      var loginBtn = document.getElementById('loginBtn');
+      var signupBtn = document.getElementById('signupBtn');
+      var tabs = [tabLogin, tabSignup];
 
-    function switchTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-      hideMessages();
-
-      if (tab === 'login') {
-        document.querySelectorAll('.auth-tab')[0].classList.add('active');
-        document.getElementById('loginForm').classList.add('active');
-        document.body.classList.remove('signup-active');
-      } else {
-        document.querySelectorAll('.auth-tab')[1].classList.add('active');
-        document.getElementById('signupForm').classList.add('active');
-        document.body.classList.add('signup-active');
-      }
-    }
-
-    function showError(msg) {
-      const el = document.getElementById('authError');
-      el.textContent = msg;
-      el.classList.add('visible');
-      document.getElementById('authSuccess').classList.remove('visible');
-    }
-
-    function showSuccess(msg) {
-      const el = document.getElementById('authSuccess');
-      el.textContent = msg;
-      el.classList.add('visible');
-      document.getElementById('authError').classList.remove('visible');
-    }
-
-    function hideMessages() {
-      document.getElementById('authError').classList.remove('visible');
-      document.getElementById('authSuccess').classList.remove('visible');
-    }
-
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-    }
-
-    function friendlyError(msg) {
-      const lower = msg.toLowerCase();
-      if (lower.includes('invalid login credentials')) return 'Incorrect email or password. Double-check and try again.';
-      if (lower.includes('email not confirmed')) return 'Your email hasn\'t been confirmed yet — check your inbox.';
-      if (lower.includes('user already registered') || lower.includes('already been registered')) return 'This email is already in use. Try signing in instead.';
-      if (lower.includes('rate limit') || lower.includes('too many requests')) return 'Too many attempts — wait a minute and try again.';
-      if (lower.includes('password') && lower.includes('at least')) return 'Password must be at least 6 characters.';
-      if (lower.includes('signup is disabled')) return 'Sign-ups are currently closed.';
-      return msg;
-    }
-
-    async function handleLogin(e) {
-      e.preventDefault();
-      hideMessages();
-      if (!supabase) { showError('Auth service not loaded — refresh the page'); return; }
-
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      if (!email) { showError('Please enter your email address.'); return; }
-      if (!isValidEmail(email)) { showError('That doesn\'t look like a valid email — check for typos.'); return; }
-      if (!password) { showError('Please enter your password.'); return; }
-
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = true;
-      btn.textContent = 'Signing in...';
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        showError(friendlyError(error.message));
-        btn.disabled = false;
-        btn.textContent = 'Sign In';
-        return;
+      function showError(msg) {
+        errEl.textContent = msg;
+        errEl.classList.add('visible');
+        successEl.classList.remove('visible');
       }
 
-      window.location.href = 'sainsbury.html';
-    }
-
-    async function handleSignup(e) {
-      e.preventDefault();
-      hideMessages();
-      if (!supabase) { showError('Auth service not loaded — refresh the page'); return; }
-
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      const confirm = document.getElementById('signupConfirm').value;
-
-      if (!email) { showError('Please enter your email address.'); return; }
-      if (!isValidEmail(email)) { showError('That doesn\'t look like a valid email — check for typos.'); return; }
-      if (!password) { showError('Please choose a password.'); return; }
-      if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
-      if (password !== confirm) { showError('Passwords don\'t match — try retyping them.'); return; }
-
-      const btn = document.getElementById('signupBtn');
-      btn.disabled = true;
-      btn.textContent = 'Creating account...';
-
-      const { error, data } = await supabase.auth.signUp({ email, password });
-
-      if (error) {
-        showError(friendlyError(error.message));
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
-        return;
+      function showSuccess(msg) {
+        successEl.textContent = msg;
+        successEl.classList.add('visible');
+        errEl.classList.remove('visible');
       }
 
-      if (data?.user?.identities?.length === 0) {
-        showError('This email is already in use. Try signing in instead.');
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
-        return;
+      function hideMessages() {
+        errEl.classList.remove('visible');
+        successEl.classList.remove('visible');
       }
 
-      showSuccess('Account created! Check your email to confirm, then sign in.');
-      btn.disabled = false;
-      btn.textContent = 'Create Account';
-      switchTab('login');
-    }
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+      }
 
-    try {
-      const SUPABASE_URL = 'https://dvzwupfryffqptjyxlmn.supabase.co';
-      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY';
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      supabase.auth.getSession().then(({ data }) => {
-        if (data.session) window.location.href = 'sainsbury.html';
+      function friendlyError(msg) {
+        var m = msg.toLowerCase();
+        if (m.indexOf('invalid login credentials') !== -1 || m.indexOf('invalid_credentials') !== -1) return 'Incorrect email or password. Double-check and try again.';
+        if (m.indexOf('email not confirmed') !== -1) return "Your email hasn't been confirmed yet — check your inbox.";
+        if (m.indexOf('already registered') !== -1 || m.indexOf('already been registered') !== -1) return 'This email is already in use. Try signing in instead.';
+        if (m.indexOf('rate limit') !== -1 || m.indexOf('too many requests') !== -1 || m.indexOf('email_send_rate') !== -1) return 'Too many attempts — wait a minute and try again.';
+        if (m.indexOf('password') !== -1 && m.indexOf('at least') !== -1) return 'Password must be at least 6 characters.';
+        if (m.indexOf('signup is disabled') !== -1) return 'Sign-ups are currently closed.';
+        if (m.indexOf('email_address_invalid') !== -1 || m.indexOf('invalid email') !== -1) return "That email address isn't valid — check for typos.";
+        return msg;
+      }
+
+      function switchTab(tab) {
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        loginForm.classList.remove('active');
+        signupForm.classList.remove('active');
+        hideMessages();
+
+        if (tab === 'login') {
+          tabLogin.classList.add('active');
+          loginForm.classList.add('active');
+          document.body.classList.remove('signup-active');
+        } else {
+          tabSignup.classList.add('active');
+          signupForm.classList.add('active');
+          document.body.classList.add('signup-active');
+        }
+      }
+
+      tabLogin.addEventListener('click', function() { switchTab('login'); });
+      tabSignup.addEventListener('click', function() { switchTab('signup'); });
+
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        hideMessages();
+        if (!sb) { showError('Auth service not loaded — refresh the page'); return; }
+
+        var email = document.getElementById('loginEmail').value.trim();
+        var password = document.getElementById('loginPassword').value;
+
+        if (!email) { showError('Please enter your email address.'); return; }
+        if (!isValidEmail(email)) { showError("That doesn't look like a valid email — check for typos."); return; }
+        if (!password) { showError('Please enter your password.'); return; }
+
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Signing in...';
+
+        sb.auth.signInWithPassword({ email: email, password: password }).then(function(res) {
+          if (res.error) {
+            showError(friendlyError(res.error.message));
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Sign In';
+            return;
+          }
+          window.location.href = 'sainsbury.html';
+        }).catch(function(err) {
+          showError('Connection error — check your internet and try again.');
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Sign In';
+        });
       });
-    } catch(e) {
-      console.error('Supabase init failed:', e);
-    }
+
+      signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        hideMessages();
+        if (!sb) { showError('Auth service not loaded — refresh the page'); return; }
+
+        var email = document.getElementById('signupEmail').value.trim();
+        var password = document.getElementById('signupPassword').value;
+        var confirm = document.getElementById('signupConfirm').value;
+
+        if (!email) { showError('Please enter your email address.'); return; }
+        if (!isValidEmail(email)) { showError("That doesn't look like a valid email — check for typos."); return; }
+        if (!password) { showError('Please choose a password.'); return; }
+        if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+        if (password !== confirm) { showError("Passwords don't match — try retyping them."); return; }
+
+        signupBtn.disabled = true;
+        signupBtn.textContent = 'Creating account...';
+
+        sb.auth.signUp({ email: email, password: password }).then(function(res) {
+          if (res.error) {
+            showError(friendlyError(res.error.message));
+            signupBtn.disabled = false;
+            signupBtn.textContent = 'Create Account';
+            return;
+          }
+
+          if (res.data && res.data.user && res.data.user.identities && res.data.user.identities.length === 0) {
+            showError('This email is already in use. Try signing in instead.');
+            signupBtn.disabled = false;
+            signupBtn.textContent = 'Create Account';
+            return;
+          }
+
+          showSuccess('Account created! Check your email to confirm, then sign in.');
+          signupBtn.disabled = false;
+          signupBtn.textContent = 'Create Account';
+          switchTab('login');
+        }).catch(function(err) {
+          showError('Connection error — check your internet and try again.');
+          signupBtn.disabled = false;
+          signupBtn.textContent = 'Create Account';
+        });
+      });
+
+      try {
+        sb = window.supabase.createClient(
+          'https://dvzwupfryffqptjyxlmn.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY'
+        );
+        sb.auth.getSession().then(function(res) {
+          if (res.data && res.data.session) window.location.href = 'sainsbury.html';
+        });
+      } catch(e) {
+        console.error('Supabase init failed:', e);
+      }
+    })();
   </script>
 </body>
 </html>
