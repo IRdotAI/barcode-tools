@@ -238,21 +238,41 @@
       document.getElementById('authSuccess').classList.remove('visible');
     }
 
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    }
+
+    function friendlyError(msg) {
+      const lower = msg.toLowerCase();
+      if (lower.includes('invalid login credentials')) return 'Incorrect email or password. Double-check and try again.';
+      if (lower.includes('email not confirmed')) return 'Your email hasn\'t been confirmed yet — check your inbox.';
+      if (lower.includes('user already registered') || lower.includes('already been registered')) return 'This email is already in use. Try signing in instead.';
+      if (lower.includes('rate limit') || lower.includes('too many requests')) return 'Too many attempts — wait a minute and try again.';
+      if (lower.includes('password') && lower.includes('at least')) return 'Password must be at least 6 characters.';
+      if (lower.includes('signup is disabled')) return 'Sign-ups are currently closed.';
+      return msg;
+    }
+
     async function handleLogin(e) {
       e.preventDefault();
       hideMessages();
       if (!supabase) { showError('Auth service not loaded — refresh the page'); return; }
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = true;
-      btn.textContent = 'Signing in...';
 
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
 
+      if (!email) { showError('Please enter your email address.'); return; }
+      if (!isValidEmail(email)) { showError('That doesn\'t look like a valid email — check for typos.'); return; }
+      if (!password) { showError('Please enter your password.'); return; }
+
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        showError(error.message);
+        showError(friendlyError(error.message));
         btn.disabled = false;
         btn.textContent = 'Sign In';
         return;
@@ -270,19 +290,27 @@
       const password = document.getElementById('signupPassword').value;
       const confirm = document.getElementById('signupConfirm').value;
 
-      if (password !== confirm) {
-        showError('Passwords do not match');
-        return;
-      }
+      if (!email) { showError('Please enter your email address.'); return; }
+      if (!isValidEmail(email)) { showError('That doesn\'t look like a valid email — check for typos.'); return; }
+      if (!password) { showError('Please choose a password.'); return; }
+      if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+      if (password !== confirm) { showError('Passwords don\'t match — try retyping them.'); return; }
 
       const btn = document.getElementById('signupBtn');
       btn.disabled = true;
       btn.textContent = 'Creating account...';
 
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error, data } = await supabase.auth.signUp({ email, password });
 
       if (error) {
-        showError(error.message);
+        showError(friendlyError(error.message));
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+        return;
+      }
+
+      if (data?.user?.identities?.length === 0) {
+        showError('This email is already in use. Try signing in instead.');
         btn.disabled = false;
         btn.textContent = 'Create Account';
         return;
