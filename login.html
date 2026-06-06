@@ -203,13 +203,7 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://dvzwupfryffqptjyxlmn.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = 'sainsbury.html';
-    });
+    let supabase = null;
 
     function switchTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -247,6 +241,7 @@
     async function handleLogin(e) {
       e.preventDefault();
       hideMessages();
+      if (!supabase) { showError('Auth service not loaded — refresh the page'); return; }
       const btn = document.getElementById('loginBtn');
       btn.disabled = true;
       btn.textContent = 'Signing in...';
@@ -269,6 +264,7 @@
     async function handleSignup(e) {
       e.preventDefault();
       hideMessages();
+      if (!supabase) { showError('Auth service not loaded — refresh the page'); return; }
 
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
@@ -296,6 +292,17 @@
       btn.disabled = false;
       btn.textContent = 'Create Account';
       switchTab('login');
+    }
+
+    try {
+      const SUPABASE_URL = 'https://dvzwupfryffqptjyxlmn.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY';
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) window.location.href = 'sainsbury.html';
+      });
+    } catch(e) {
+      console.error('Supabase init failed:', e);
     }
   </script>
 </body>
