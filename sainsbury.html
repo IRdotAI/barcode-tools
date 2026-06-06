@@ -257,6 +257,41 @@
       transition: color 0.2s;
     }
 
+    /* ── Risk indicator ── */
+    .risk-indicator {
+      display: none; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 10px;
+      margin-top: 10px; font-size: 12px; font-weight: 500;
+      line-height: 1.4; transition: all 0.3s ease;
+    }
+    .risk-indicator.visible { display: flex; }
+    .risk-indicator .risk-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .risk-indicator .risk-text { flex: 1; }
+    .risk-indicator .risk-pct {
+      font-weight: 700; font-size: 13px; flex-shrink: 0;
+      font-family: 'Inter', monospace;
+    }
+
+    .risk-indicator.risk-green {
+      background: rgba(0, 206, 201, 0.08); border: 1px solid rgba(0, 206, 201, 0.25);
+      color: #00cec9;
+    }
+    .risk-indicator.risk-green .risk-dot { background: #00cec9; box-shadow: 0 0 6px rgba(0, 206, 201, 0.5); }
+
+    .risk-indicator.risk-yellow {
+      background: rgba(243, 156, 18, 0.08); border: 1px solid rgba(243, 156, 18, 0.25);
+      color: #f39c12;
+    }
+    .risk-indicator.risk-yellow .risk-dot { background: #f39c12; box-shadow: 0 0 6px rgba(243, 156, 18, 0.5); }
+
+    .risk-indicator.risk-red {
+      background: rgba(255, 107, 107, 0.08); border: 1px solid rgba(255, 107, 107, 0.25);
+      color: #ff6b6b;
+    }
+    .risk-indicator.risk-red .risk-dot { background: #ff6b6b; box-shadow: 0 0 6px rgba(255, 107, 107, 0.5); }
+
     /* ── Generate button ── */
     .btn-generate {
       width: 100%; padding: 14px 20px; border: none;
@@ -494,6 +529,11 @@
           <span class="price-preview" id="pricePreview"></span>
         </div>
         <div class="info-text warning">⚠ Prices below £0.10 may be flagged</div>
+        <div class="risk-indicator" id="riskIndicator">
+          <span class="risk-dot"></span>
+          <span class="risk-text" id="riskText"></span>
+          <span class="risk-pct" id="riskPct"></span>
+        </div>
       </div>
 
       <button class="btn-generate" onclick="generateBarcode()">
@@ -715,6 +755,10 @@
       searchInput.value = '';
       searchClear.classList.remove('visible');
 
+      // Update risk if price is already entered
+      const existingPrice = parseFloat(priceInput.value);
+      if (!isNaN(existingPrice)) updateRiskIndicator(existingPrice);
+
       document.getElementById('price').focus();
     }
 
@@ -722,12 +766,57 @@
       selectedBadge.classList.remove('visible');
       selectedProduct = null;
       document.getElementById('productCode').value = '';
+      riskIndicator.classList.remove('visible', 'risk-green', 'risk-yellow', 'risk-red');
       searchInput.focus();
     });
 
     // ── Price input (£ format) ────────────────────────────────────────────────
     const priceInput   = document.getElementById('price');
     const pricePreview = document.getElementById('pricePreview');
+
+    const riskIndicator = document.getElementById('riskIndicator');
+    const riskText      = document.getElementById('riskText');
+    const riskPct       = document.getElementById('riskPct');
+
+    function updateRiskIndicator(customPrice) {
+      // Need a selected product with a real price to compare
+      if (!selectedProduct || selectedProduct.price == null || isNaN(customPrice) || customPrice <= 0) {
+        riskIndicator.classList.remove('visible', 'risk-green', 'risk-yellow', 'risk-red');
+        return;
+      }
+
+      const realPrice = Number(selectedProduct.price);
+      if (realPrice <= 0) {
+        riskIndicator.classList.remove('visible', 'risk-green', 'risk-yellow', 'risk-red');
+        return;
+      }
+
+      const discount = ((realPrice - customPrice) / realPrice) * 100;
+
+      // If custom price is higher or equal, no risk
+      if (discount <= 0) {
+        riskIndicator.className = 'risk-indicator visible risk-green';
+        riskText.textContent = 'Price is at or above retail — no flags';
+        riskPct.textContent = '';
+        return;
+      }
+
+      const pctStr = `${Math.round(discount)}% off`;
+
+      if (discount < 30) {
+        riskIndicator.className = 'risk-indicator visible risk-green';
+        riskText.textContent = 'Looks like a normal yellow sticker — should scan clean';
+        riskPct.textContent = pctStr;
+      } else if (discount < 45) {
+        riskIndicator.className = 'risk-indicator visible risk-yellow';
+        riskText.textContent = 'Borderline — might trigger assistance depending on store';
+        riskPct.textContent = pctStr;
+      } else {
+        riskIndicator.className = 'risk-indicator visible risk-red';
+        riskText.textContent = 'High risk — will likely trigger "approval needed"';
+        riskPct.textContent = pctStr;
+      }
+    }
 
     priceInput.addEventListener('input', () => {
       let val = priceInput.value.replace(/[^0-9.]/g, '');
@@ -744,6 +833,8 @@
       } else {
         pricePreview.textContent = '';
       }
+
+      updateRiskIndicator(parseFloat(val));
     });
 
     // ── Barcode generation ────────────────────────────────────────────────────
