@@ -790,7 +790,7 @@
         return;
       }
 
-      showStatus('<img src="RdotA.png" style="width:28px;height:28px;border-radius:6px;vertical-align:middle"> <span style="margin-left:8px">Searching Sainsbury\'s — first search may take up to a minute...</span>');
+      showStatus('<span class="spinner"></span> <span style="margin-left:8px">Searching Sainsbury\'s — first search may take up to a minute...</span>');
       searchResults.classList.add('visible');
 
       debounceTimer = setTimeout(() => doSearch(q), 800);
