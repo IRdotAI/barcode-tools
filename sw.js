@@ -1,9 +1,9 @@
-const CACHE_NAME = 'barcode-tools-v3';
+const CACHE_NAME = 'barcode-tools-v4';
 const ASSETS = [
   './',
   './sainsbury.html',
   './sainsbury.png',
-  './RAIO.gif',
+  './RdotA.png',
   './icon-192.png',
   './icon-512.png',
   './manifest.json'
