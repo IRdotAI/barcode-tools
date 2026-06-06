@@ -588,6 +588,140 @@
   </div>
 
   <script>
+    const BRAND_COLOR = '#f06c00';
+    const CARD_BG = '#f5f4f0';
+
+    const logoImg = new Image();
+    logoImg.crossOrigin = 'anonymous';
+    logoImg.src = 'sainsbury.png';
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawPill(ctx, text, x, y, fontSize, align) {
+      ctx.font = `700 ${fontSize}px Inter, -apple-system, sans-serif`;
+      const tw = ctx.measureText(text).width;
+      const pH = fontSize + 24;
+      const pW = tw + 36;
+      const pX = align === 'right' ? x - pW : x;
+      ctx.fillStyle = BRAND_COLOR;
+      roundRect(ctx, pX, y, pW, pH, 10);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText(text, pX + 18, y + pH / 2 + 1);
+    }
+
+    function wrapText(ctx, text, maxW) {
+      const words = text.split(' ');
+      const lines = [];
+      let line = '';
+      for (const word of words) {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxW && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function generateCardCanvas(barcodeData, productName, priceStr) {
+      const W = 750, H = 1334, PAD = 50;
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+
+      ctx.fillStyle = CARD_BG;
+      ctx.fillRect(0, 0, W, H);
+
+      drawPill(ctx, "Sainsbury's", PAD, 80, 28, 'left');
+      drawPill(ctx, priceStr, W - PAD, 80, 28, 'right');
+
+      const logoSize = 240;
+      const logoX = (W - logoSize) / 2;
+      const logoY = 220;
+      if (logoImg.complete && logoImg.naturalWidth > 0) {
+        ctx.save();
+        roundRect(ctx, logoX, logoY, logoSize, logoSize, 24);
+        ctx.clip();
+        ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = BRAND_COLOR;
+        roundRect(ctx, logoX, logoY, logoSize, logoSize, 24);
+        ctx.fill();
+        ctx.font = '700 42px Inter, sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText("Sainsbury's", W / 2, logoY + logoSize / 2);
+        ctx.textAlign = 'left';
+      }
+
+      const prodY = 550;
+      ctx.font = '700 24px Inter, -apple-system, sans-serif';
+      const prodLines = wrapText(ctx, productName, W - PAD * 2 - 40);
+      for (let i = 0; i < Math.min(prodLines.length, 2); i++) {
+        let display = prodLines[i];
+        if (i === 1 && prodLines.length > 2) display = display.slice(0, -3) + '...';
+        drawPill(ctx, display, PAD, prodY + i * 58, 22, 'left');
+      }
+
+      const bcCardX = PAD;
+      const bcCardY = 750;
+      const bcCardW = W - PAD * 2;
+      const bcCardH = 420;
+
+      ctx.shadowColor = 'rgba(0,0,0,0.08)';
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetY = 4;
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, bcCardX, bcCardY, bcCardW, bcCardH, 24);
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      const tempBC = document.createElement('canvas');
+      tempBC.width = 600; tempBC.height = 200;
+      JsBarcode(tempBC, barcodeData, {
+        format: 'CODE128',
+        displayValue: false,
+        width: 2, height: 160, margin: 10,
+      });
+
+      const bcDrawW = bcCardW - 80;
+      const bcDrawH = bcDrawW * (tempBC.height / tempBC.width);
+      const bcDrawX = bcCardX + 40;
+      const bcDrawY = bcCardY + 50;
+      ctx.drawImage(tempBC, bcDrawX, bcDrawY, bcDrawW, bcDrawH);
+
+      ctx.font = '600 20px Inter, monospace';
+      ctx.fillStyle = '#444';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(barcodeData, W / 2, bcDrawY + bcDrawH + 20);
+      ctx.textAlign = 'left';
+
+      return c;
+    }
+
     const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:8000'
       : 'https://sainsburys-api.onrender.com';
@@ -888,8 +1022,11 @@
 
       document.getElementById('barcodeDigitsText').textContent = fullBarcode;
 
+      const priceStr = `£${priceVal.toFixed(2)}`;
+      const cardCanvas = generateCardCanvas(fullBarcode, prodName, priceStr);
+
       const link = document.getElementById('downloadLink');
-      link.href     = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+      link.href     = cardCanvas.toDataURL('image/png');
       link.download = `sainsbury-${productDigits}-${priceInPence}p.png`;
 
       if (navigator.share) {
@@ -925,11 +1062,11 @@
     });
 
     document.getElementById('shareBtn').addEventListener('click', async () => {
-      const canvas = document.getElementById('barcodeCanvas');
       const prodName = selectedProduct ? selectedProduct.name : 'Barcode';
       const priceText = `£${parseFloat(priceInput.value).toFixed(2)}`;
+      const cardCanvas = generateCardCanvas(lastGeneratedBarcode, prodName, priceText);
       try {
-        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        const blob = await new Promise(r => cardCanvas.toBlob(r, 'image/png'));
         const file = new File([blob], 'sainsbury-barcode.png', { type: 'image/png' });
         await navigator.share({
           files: [file],
