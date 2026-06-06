@@ -609,19 +609,13 @@
       ctx.closePath();
     }
 
-    function drawPill(ctx, text, x, y, fontSize, align) {
+    function drawLabel(ctx, text, x, y, fontSize, align) {
       ctx.font = `700 ${fontSize}px Inter, -apple-system, sans-serif`;
-      const tw = ctx.measureText(text).width;
-      const pH = fontSize + 24;
-      const pW = tw + 36;
-      const pX = align === 'right' ? x - pW : x;
-      ctx.fillStyle = 'rgba(255,255,255,0.95)';
-      roundRect(ctx, pX, y, pW, pH, 10);
-      ctx.fill();
-      ctx.fillStyle = BRAND_COLOR;
+      ctx.fillStyle = '#fff';
       ctx.textBaseline = 'middle';
+      ctx.textAlign = align === 'right' ? 'right' : 'left';
+      ctx.fillText(text, x, y);
       ctx.textAlign = 'left';
-      ctx.fillText(text, pX + 18, y + pH / 2 + 1);
     }
 
     function wrapText(ctx, text, maxW) {
@@ -650,8 +644,8 @@
       ctx.fillStyle = CARD_BG;
       ctx.fillRect(0, 0, W, H);
 
-      drawPill(ctx, "Sainsbury's", PAD, 80, 28, 'left');
-      drawPill(ctx, priceStr, W - PAD, 80, 28, 'right');
+      drawLabel(ctx, "Sainsbury's", PAD, 95, 28, 'left');
+      drawLabel(ctx, priceStr, W - PAD, 95, 28, 'right');
 
       const logoSize = 240;
       const logoX = (W - logoSize) / 2;
@@ -676,11 +670,11 @@
 
       const prodY = 550;
       ctx.font = '700 24px Inter, -apple-system, sans-serif';
-      const prodLines = wrapText(ctx, productName, W - PAD * 2 - 40);
+      const prodLines = wrapText(ctx, productName, W - PAD * 2);
       for (let i = 0; i < Math.min(prodLines.length, 2); i++) {
         let display = prodLines[i];
         if (i === 1 && prodLines.length > 2) display = display.slice(0, -3) + '...';
-        drawPill(ctx, display, PAD, prodY + i * 58, 22, 'left');
+        drawLabel(ctx, display, PAD, prodY + i * 34, 24, 'left');
       }
 
       const bcCardX = PAD;
