@@ -31,15 +31,25 @@
       --radius:  12px;
     }
 
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-primary);
       color: var(--text-primary);
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
+    }
+
+    body.signup-active {
+      overflow-y: auto;
+      height: auto;
+      min-height: 100%;
     }
 
     body::before {
@@ -213,9 +223,11 @@
       if (tab === 'login') {
         document.querySelectorAll('.auth-tab')[0].classList.add('active');
         document.getElementById('loginForm').classList.add('active');
+        document.body.classList.remove('signup-active');
       } else {
         document.querySelectorAll('.auth-tab')[1].classList.add('active');
         document.getElementById('signupForm').classList.add('active');
+        document.body.classList.add('signup-active');
       }
     }
 
