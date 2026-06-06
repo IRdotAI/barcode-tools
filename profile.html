@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Profile — Barcode Tools</title>
   <meta name="theme-color" content="#0a0a0f">
   <link rel="manifest" href="manifest.json">
@@ -19,7 +19,6 @@
       --bg-card:    #12121a;
       --bg-input:   #1a1a26;
       --border:     #2a2a3a;
-      --border-focus: #6c5ce7;
       --text-primary:   #e8e8f0;
       --text-secondary: #8888a0;
       --text-muted:     #55556a;
@@ -28,21 +27,23 @@
       --accent-glow: rgba(108, 92, 231, 0.25);
       --success: #00cec9;
       --danger:  #ff6b6b;
-      --radius:  12px;
+      --radius:  10px;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-primary);
       color: var(--text-primary);
-      min-height: 100vh;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
-      padding: 24px;
-      padding-bottom: env(safe-area-inset-bottom, 24px);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
     }
 
     body::before {
@@ -54,53 +55,61 @@
 
     .profile-container {
       position: relative; z-index: 1;
-      width: 100%; max-width: 460px;
-      padding-top: 20px;
+      width: 100%; max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      max-height: 100vh;
+      max-height: 100dvh;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-shrink: 0;
     }
 
     .back-link {
-      display: inline-block;
       color: var(--text-muted);
       text-decoration: none;
       font-size: 13px;
       font-weight: 500;
-      margin-bottom: 20px;
       transition: color 0.2s;
     }
     .back-link:hover { color: var(--text-primary); }
 
     .profile-header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
     }
 
     .avatar-wrap {
       position: relative;
-      width: 80px; height: 80px;
-      margin: 0 auto 16px;
+      width: 64px; height: 64px;
+      margin: 0 auto 8px;
       cursor: pointer;
     }
 
     .avatar {
-      width: 80px; height: 80px;
+      width: 64px; height: 64px;
       border-radius: 50%;
       background: var(--accent);
       display: flex; align-items: center; justify-content: center;
-      font-size: 30px; font-weight: 700; color: #fff;
+      font-size: 24px; font-weight: 700; color: #fff;
       text-transform: uppercase;
       overflow: hidden;
       border: 2px solid var(--border);
       transition: border-color 0.2s;
     }
-    .avatar img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-wrap:hover .avatar { border-color: var(--accent); }
 
     .avatar-edit {
       position: absolute;
-      bottom: 0; right: 0;
-      width: 26px; height: 26px;
+      bottom: -2px; right: -2px;
+      width: 22px; height: 22px;
       border-radius: 50%;
       background: var(--accent);
       border: 2px solid var(--bg-primary);
@@ -108,47 +117,55 @@
       pointer-events: none;
     }
 
+    .avatar-status {
+      text-align: center;
+      font-size: 11px;
+      color: var(--success);
+      min-height: 14px;
+    }
+
     .profile-header h1 {
-      font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
-      margin-bottom: 4px;
+      font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
+      margin-bottom: 2px;
     }
 
     .profile-header p {
-      font-size: 13px; color: var(--text-muted);
+      font-size: 12px; color: var(--text-muted);
     }
 
     .profile-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 16px;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
     }
 
     .profile-card h2 {
-      font-size: 13px; font-weight: 600;
+      font-size: 11px; font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
     }
 
     .info-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding: 8px 0;
       border-bottom: 1px solid var(--border);
     }
     .info-row:last-child { border-bottom: none; }
 
     .info-label {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-secondary);
     }
 
     .info-value {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--text-primary);
       text-align: right;
@@ -156,12 +173,12 @@
 
     .tier-badge {
       display: inline-block;
-      padding: 4px 12px;
+      padding: 3px 10px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
 
     .tier-free {
@@ -178,13 +195,13 @@
 
     .upgrade-btn {
       width: 100%;
-      padding: 14px 20px;
+      padding: 11px 16px;
       border: none;
       border-radius: var(--radius);
       background: var(--accent);
       color: #fff;
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.25s ease;
@@ -198,53 +215,63 @@
 
     .signout-btn {
       width: 100%;
-      padding: 13px 20px;
+      padding: 11px 16px;
       border: 1px solid var(--danger);
       border-radius: var(--radius);
       background: rgba(255,107,107,0.08);
       color: var(--danger);
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.25s ease;
+      flex-shrink: 0;
     }
-    .signout-btn:hover {
-      background: rgba(255,107,107,0.18);
-    }
-
-    .avatar-status {
-      text-align: center;
-      font-size: 12px;
-      color: var(--success);
-      margin-top: 6px;
-      min-height: 18px;
-    }
+    .signout-btn:hover { background: rgba(255,107,107,0.18); }
 
     .profile-footer {
       text-align: center;
-      margin-top: 20px;
-      padding-bottom: 40px;
-      font-size: 12px;
+      margin-top: 10px;
+      font-size: 11px;
       color: var(--text-muted);
+      flex-shrink: 0;
     }
 
-    @media (max-width: 480px) {
-      .profile-container { max-width: 100%; }
-      .profile-card { padding: 18px; }
+    @media (max-height: 700px) {
+      .profile-header { margin-bottom: 8px; }
+      .avatar-wrap { width: 52px; height: 52px; margin-bottom: 6px; }
+      .avatar { width: 52px; height: 52px; font-size: 20px; }
+      .profile-header h1 { font-size: 16px; }
+      .profile-card { padding: 10px 14px; margin-bottom: 8px; }
+      .profile-card h2 { margin-bottom: 4px; font-size: 10px; }
+      .info-row { padding: 6px 0; }
+      .info-label, .info-value { font-size: 12px; }
+      .upgrade-btn, .signout-btn { padding: 9px 14px; font-size: 12px; }
+      .top-bar { margin-bottom: 8px; }
+    }
+
+    @media (max-height: 600px) {
+      body { padding: 10px; }
+      .avatar-wrap { width: 44px; height: 44px; }
+      .avatar { width: 44px; height: 44px; font-size: 18px; }
+      .profile-card { padding: 8px 12px; margin-bottom: 6px; border-radius: 10px; }
+      .info-row { padding: 4px 0; }
     }
   </style>
 </head>
 
 <body>
   <div class="profile-container">
-    <a href="generators.html" class="back-link" id="backLink">← Back</a>
+    <div class="top-bar">
+      <a href="generators.html" class="back-link" id="backLink">← Back</a>
+      <span style="font-size:11px; color:var(--text-muted);">Account</span>
+    </div>
 
     <div class="profile-header">
       <div class="avatar-wrap" id="avatarWrap" title="Change profile picture">
         <div class="avatar" id="avatar"></div>
         <div class="avatar-edit">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
           </svg>
         </div>
@@ -266,7 +293,7 @@
         <span class="info-value" id="joinDate">—</span>
       </div>
       <div class="info-row">
-        <span class="info-label">Auth provider</span>
+        <span class="info-label">Provider</span>
         <span class="info-value" id="providerValue">—</span>
       </div>
     </div>
@@ -274,15 +301,11 @@
     <div class="profile-card">
       <h2>Subscription</h2>
       <div class="info-row">
-        <span class="info-label">Current plan</span>
+        <span class="info-label">Plan</span>
         <span class="info-value"><span class="tier-badge tier-free" id="tierBadge">Free</span></span>
       </div>
-      <div class="info-row">
-        <span class="info-label">Searches</span>
-        <span class="info-value" id="searchLimit">Unlimited</span>
-      </div>
-      <div class="info-row" id="upgradeRow">
-        <span class="info-label">Upgrade for faster results & priority support</span>
+      <div class="info-row" id="upgradeRow" style="border-bottom:none;">
+        <span class="info-label" style="font-size:12px;">Upgrade for faster results</span>
       </div>
       <button class="upgrade-btn" id="upgradeBtn">Upgrade to Premium</button>
     </div>
@@ -319,8 +342,7 @@
 
       function setInitialAvatar(email) {
         var el = document.getElementById('avatar');
-        var initial = email.charAt(0).toUpperCase();
-        el.textContent = initial;
+        el.textContent = email.charAt(0).toUpperCase();
       }
 
       sb.auth.getSession().then(function(res) {
@@ -389,14 +411,14 @@
             data: { avatar_url: publicUrl }
           }).then(function(updateRes) {
             if (updateRes.error) {
-              statusEl.textContent = 'Saved image but failed to update profile';
+              statusEl.textContent = 'Saved but failed to update profile';
               statusEl.style.color = '#ff6b6b';
               return;
             }
             setAvatar(publicUrl);
-            statusEl.textContent = 'Profile picture updated!';
+            statusEl.textContent = 'Updated!';
             statusEl.style.color = '#00cec9';
-            setTimeout(function() { statusEl.textContent = ''; }, 3000);
+            setTimeout(function() { statusEl.textContent = ''; }, 2000);
           });
         });
       });
