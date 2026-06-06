@@ -159,6 +159,15 @@
     }
     .auth-success.visible { display: block; }
 
+    .forgot-link {
+      display: block; text-align: center; margin-top: 14px;
+      font-size: 13px; color: var(--text-muted);
+      cursor: pointer; transition: color 0.2s;
+      background: none; border: none; font-family: 'Inter', sans-serif;
+      width: 100%;
+    }
+    .forgot-link:hover { color: var(--accent); }
+
     .auth-footer {
       text-align: center; margin-top: 20px;
       font-size: 12px; color: var(--text-muted);
@@ -198,6 +207,16 @@
           <input type="password" id="loginPassword" placeholder="Your password" required autocomplete="current-password">
         </div>
         <button type="submit" class="auth-btn" id="loginBtn">Sign In</button>
+        <button type="button" class="forgot-link" id="forgotLink">Forgot password?</button>
+      </form>
+
+      <form class="auth-form" id="forgotForm">
+        <div class="form-group">
+          <label for="forgotEmail">Email</label>
+          <input type="email" id="forgotEmail" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <button type="submit" class="auth-btn" id="forgotBtn">Send Reset Link</button>
+        <button type="button" class="forgot-link" id="backToLogin">← Back to Sign In</button>
       </form>
 
       <form class="auth-form" id="signupForm">
@@ -231,8 +250,12 @@
       var tabSignup = document.getElementById('tabSignup');
       var loginForm = document.getElementById('loginForm');
       var signupForm = document.getElementById('signupForm');
+      var forgotForm = document.getElementById('forgotForm');
       var loginBtn = document.getElementById('loginBtn');
       var signupBtn = document.getElementById('signupBtn');
+      var forgotBtn = document.getElementById('forgotBtn');
+      var forgotLink = document.getElementById('forgotLink');
+      var backToLogin = document.getElementById('backToLogin');
       var tabs = [tabLogin, tabSignup];
 
       function showError(msg) {
@@ -272,21 +295,27 @@
         tabs.forEach(function(t) { t.classList.remove('active'); });
         loginForm.classList.remove('active');
         signupForm.classList.remove('active');
+        forgotForm.classList.remove('active');
         hideMessages();
 
         if (tab === 'login') {
           tabLogin.classList.add('active');
           loginForm.classList.add('active');
           document.body.classList.remove('signup-active');
-        } else {
+        } else if (tab === 'signup') {
           tabSignup.classList.add('active');
           signupForm.classList.add('active');
           document.body.classList.add('signup-active');
+        } else if (tab === 'forgot') {
+          forgotForm.classList.add('active');
+          document.body.classList.remove('signup-active');
         }
       }
 
       tabLogin.addEventListener('click', function() { switchTab('login'); });
       tabSignup.addEventListener('click', function() { switchTab('signup'); });
+      forgotLink.addEventListener('click', function() { switchTab('forgot'); });
+      backToLogin.addEventListener('click', function() { switchTab('login'); });
 
       loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -359,6 +388,38 @@
           showError('Connection error — check your internet and try again.');
           signupBtn.disabled = false;
           signupBtn.textContent = 'Create Account';
+        });
+      });
+
+      forgotForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        hideMessages();
+        if (!sb) { showError('Auth service not loaded — refresh the page'); return; }
+
+        var email = document.getElementById('forgotEmail').value.trim();
+
+        if (!email) { showError('Please enter your email address.'); return; }
+        if (!isValidEmail(email)) { showError("That doesn't look like a valid email — check for typos."); return; }
+
+        forgotBtn.disabled = true;
+        forgotBtn.textContent = 'Sending...';
+
+        sb.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + window.location.pathname.replace('login.html', 'reset-password.html')
+        }).then(function(res) {
+          if (res.error) {
+            showError(friendlyError(res.error.message));
+            forgotBtn.disabled = false;
+            forgotBtn.textContent = 'Send Reset Link';
+            return;
+          }
+          showSuccess('Reset link sent! Check your inbox for an email from Supabase.');
+          forgotBtn.disabled = false;
+          forgotBtn.textContent = 'Send Reset Link';
+        }).catch(function(err) {
+          showError('Connection error — check your internet and try again.');
+          forgotBtn.disabled = false;
+          forgotBtn.textContent = 'Send Reset Link';
         });
       });
 
