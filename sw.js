@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barcode-tools-v25';
+const CACHE_NAME = 'barcode-tools-v26';
 const ASSETS = [
   './',
   './index.html',

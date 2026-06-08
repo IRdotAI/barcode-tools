@@ -92,13 +92,14 @@
 
     .search-wrap { position: relative; }
     .search-wrap svg.search-icon {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
       color: var(--text-tertiary); pointer-events: none; transition: color 0.2s;
+      z-index: 1;
     }
     .search-wrap:focus-within svg.search-icon { color: var(--accent); }
 
     .search-input {
-      width: 100%; padding: 13px 14px 13px 50px;
+      width: 100%; padding: 13px 40px 13px 38px;
       background: var(--input-bg); border: none;
       border-radius: var(--radius); color: var(--text-primary);
       font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400;
