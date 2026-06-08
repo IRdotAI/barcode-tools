@@ -497,7 +497,7 @@
         localStorage.removeItem('disclaimer_accepted');
         localStorage.removeItem('sains_history');
         localStorage.removeItem('ean13_history');
-        sb.auth.signOut({ scope: 'local' }).then(function() {
+        sb.auth.signOut().then(function() {
           window.location.href = 'login.html';
         }).catch(function() {
           window.location.href = 'login.html';
