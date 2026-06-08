@@ -1061,13 +1061,18 @@
 
     let lastGeneratedBarcode = '';
 
-    async function generateBarcode() {
-      /* Rate limit check (server-side, tamper-proof) */
+    function generateBarcode() {
+      /* Rate limit check — non-blocking, fire-and-forget guard */
       if (window.RdotaRateLimit) {
-        var allowed = await RdotaRateLimit.canGenerate(sb);
-        if (!allowed) return;
+        RdotaRateLimit.canGenerate(sb).then(function(allowed) {
+          if (allowed) _doGenerate();
+        }).catch(function() { _doGenerate(); });
+        return;
       }
+      _doGenerate();
+    }
 
+    function _doGenerate() {
       document.getElementById('errorMessage').classList.remove('visible');
 
       const productInput = document.getElementById('productCode').value.trim();

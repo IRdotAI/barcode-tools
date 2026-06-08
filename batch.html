@@ -422,14 +422,9 @@
 
     qtyInput.addEventListener('input', updateGenerateButton);
 
-    generateBtn.addEventListener('click', async () => {
-      /* Rate limit check */
-      if (window.RdotaRateLimit) {
-        var allowed = await RdotaRateLimit.canGenerate(sb);
-        if (!allowed) return;
-      }
-
-      if (typeof JsBarcode === 'undefined') {
+    generateBtn.addEventListener('click', function() {
+      function _doBatchGenerate() {
+        if (typeof JsBarcode === 'undefined') {
         alert('Barcode library failed to load. Check your internet connection and refresh the page.');
         return;
       }
@@ -470,9 +465,18 @@
       printControls.style.display = 'block';
       printGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      /* Log generation server-side */
+        /* Log generation server-side */
+        if (window.RdotaRateLimit) {
+          RdotaRateLimit.logGeneration(sb, 'batch');
+        }
+      }
+
       if (window.RdotaRateLimit) {
-        RdotaRateLimit.logGeneration(sb, 'batch');
+        RdotaRateLimit.canGenerate(sb).then(function(allowed) {
+          if (allowed) _doBatchGenerate();
+        }).catch(function() { _doBatchGenerate(); });
+      } else {
+        _doBatchGenerate();
       }
     });
 

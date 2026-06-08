@@ -592,13 +592,17 @@
 
     generateBtn.addEventListener('click', generateBarcode);
 
-    async function generateBarcode() {
-      /* Rate limit check */
+    function generateBarcode() {
       if (window.RdotaRateLimit) {
-        var allowed = await RdotaRateLimit.canGenerate(sb);
-        if (!allowed) return;
+        RdotaRateLimit.canGenerate(sb).then(function(allowed) {
+          if (allowed) _doGenerate();
+        }).catch(function() { _doGenerate(); });
+        return;
       }
+      _doGenerate();
+    }
 
+    function _doGenerate() {
       const val = input.value.replace(/\D/g, '');
       if (val.length !== 12) return;
 
