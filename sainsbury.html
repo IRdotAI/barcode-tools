@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="RdotA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -105,7 +105,7 @@
     .search-wrap:focus-within svg.search-icon { color: var(--accent); }
 
     .search-input {
-      width: 100%; padding: 13px 14px 13px 44px;
+      width: 100%; padding: 13px 14px 13px 50px;
       background: var(--bg-input); border: 1px solid var(--border);
       border-radius: var(--radius); color: var(--text-primary);
       font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400;
@@ -503,7 +503,7 @@
   <div class="container">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
       <a href="index.html" class="back-link" style="margin-bottom:0">← Back</a>
-      <a href="profile.html" id="profileBtn" style="display:none; width:32px; height:32px; border-radius:50%; border:1px solid var(--border); background:var(--bg-input); overflow:hidden; cursor:pointer; transition:border-color 0.2s;" title="Profile"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="12" r="5" fill="#55556a"/><ellipse cx="16" cy="28" rx="10" ry="8" fill="#55556a"/></svg></a>
+      <a href="profile.html" id="profileBtn" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a>
     </div>
 
     <div class="header">
@@ -664,7 +664,11 @@
         window.location.href = 'login.html';
         return;
       }
-      document.getElementById('profileBtn').style.display = 'block';
+      var btn = document.getElementById('profileBtn');
+      btn.style.display = 'inline-flex';
+      var av = localStorage.getItem('rdota_avatar'), init = localStorage.getItem('rdota_initial');
+      if (av) { btn.innerHTML = '<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">'; }
+      else if (init) { btn.innerHTML = '<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>'; }
     });
 
     const BRAND_COLOR = '#f06c00';

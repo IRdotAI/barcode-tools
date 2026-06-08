@@ -5,6 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EAN-13 Barcode Generator</title>
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="RdotA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -489,7 +493,7 @@
   <div class="container">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
       <a href="index.html" class="back-link" style="margin-bottom:0;">← Back</a>
-      <a href="profile.html" style="display:inline-flex; width:32px; height:32px; border-radius:50%; border:1px solid #2a2a3a; background:#1a1a26; overflow:hidden; cursor:pointer; transition:border-color 0.2s;" title="Profile"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="12" r="5" fill="#55556a"/><ellipse cx="16" cy="28" rx="10" ry="8" fill="#55556a"/></svg></a>
+      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid #2a2a3a;overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
     </div>
 
     <div class="header">

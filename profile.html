@@ -7,7 +7,7 @@
   <title>Profile — Barcode Tools</title>
   <meta name="theme-color" content="#0a0a0f">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="RdotA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -71,21 +71,21 @@
     .profile-header { text-align: center; margin-bottom: 12px; flex-shrink: 0; }
 
     .avatar-wrap {
-      position: relative; width: 64px; height: 64px;
-      margin: 0 auto 8px; cursor: pointer;
+      position: relative; width: 120px; height: 120px;
+      margin: 0 auto 10px; cursor: pointer;
     }
     .avatar {
-      width: 64px; height: 64px; border-radius: 50%;
+      width: 120px; height: 120px; border-radius: 50%;
       background: var(--accent); display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: 700; color: #fff; text-transform: uppercase;
-      overflow: hidden; border: 2px solid var(--border); transition: border-color 0.2s;
+      font-size: 42px; font-weight: 700; color: #fff; text-transform: uppercase;
+      overflow: hidden; border: 3px solid var(--border); transition: border-color 0.2s;
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-wrap:hover .avatar { border-color: var(--accent); }
 
     .avatar-edit {
-      position: absolute; bottom: -2px; right: -2px;
-      width: 22px; height: 22px; border-radius: 50%;
+      position: absolute; bottom: 2px; right: 2px;
+      width: 30px; height: 30px; border-radius: 50%;
       background: var(--accent); border: 2px solid var(--bg-primary);
       display: flex; align-items: center; justify-content: center;
       pointer-events: none;
@@ -190,8 +190,8 @@
 
     @media (max-height: 700px) {
       .profile-header { margin-bottom: 8px; }
-      .avatar-wrap { width: 52px; height: 52px; margin-bottom: 6px; }
-      .avatar { width: 52px; height: 52px; font-size: 20px; }
+      .avatar-wrap { width: 88px; height: 88px; margin-bottom: 6px; }
+      .avatar { width: 88px; height: 88px; font-size: 32px; }
       .profile-header h1 { font-size: 16px; }
       .profile-card { padding: 10px 14px; margin-bottom: 8px; }
       .profile-card h2 { margin-bottom: 4px; font-size: 10px; }
@@ -205,8 +205,8 @@
 
     @media (max-height: 600px) {
       body { padding: 10px; }
-      .avatar-wrap { width: 44px; height: 44px; }
-      .avatar { width: 44px; height: 44px; font-size: 18px; }
+      .avatar-wrap { width: 72px; height: 72px; }
+      .avatar { width: 72px; height: 72px; font-size: 26px; }
       .profile-card { padding: 8px 12px; margin-bottom: 6px; border-radius: 10px; }
       .info-row { padding: 4px 0; }
       .crop-area { width: 200px; height: 200px; }
@@ -320,6 +320,9 @@
         var avatarUrl = (currentUser.user_metadata && currentUser.user_metadata.avatar_url) || '';
 
         avatarUrl ? setAvatar(avatarUrl) : setInitialAvatar(email);
+        localStorage.setItem('rdota_initial', email.charAt(0).toUpperCase());
+        if (avatarUrl) localStorage.setItem('rdota_avatar', avatarUrl);
+        else localStorage.removeItem('rdota_avatar');
 
         document.getElementById('displayEmail').textContent = email;
         document.getElementById('memberSince').textContent = 'Member since ' + created.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -474,6 +477,7 @@
             return;
           }
           setAvatar(dataUrl);
+          localStorage.setItem('rdota_avatar', dataUrl);
           statusEl.textContent = 'Updated!';
           statusEl.style.color = '#00cec9';
           setTimeout(function() { statusEl.textContent = ''; }, 2000);
@@ -481,6 +485,8 @@
       });
 
       document.getElementById('signoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('rdota_avatar');
+        localStorage.removeItem('rdota_initial');
         sb.auth.signOut().then(function() { window.location.href = 'login.html'; });
       });
 
