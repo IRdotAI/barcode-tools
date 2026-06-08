@@ -497,9 +497,11 @@
         localStorage.removeItem('disclaimer_accepted');
         localStorage.removeItem('sains_history');
         localStorage.removeItem('ean13_history');
-        sb.auth.signOut().then(function() {
-          window.location.href = 'login.html';
-        }).catch(function() {
+        // clear supabase session keys manually in case signOut fails
+        Object.keys(localStorage).forEach(function(key) {
+          if (key.startsWith('sb-')) localStorage.removeItem(key);
+        });
+        sb.auth.signOut().finally(function() {
           window.location.href = 'login.html';
         });
       });
