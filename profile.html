@@ -441,7 +441,7 @@
       });
 
       document.getElementById('cropSave').addEventListener('click', function() {
-        var size = 256;
+        var size = 96;
         var canvas = document.createElement('canvas');
         canvas.width = size; canvas.height = size;
         var ctx = canvas.getContext('2d');
@@ -460,9 +460,13 @@
         var srcImg = document.getElementById('cropImg');
         ctx.drawImage(srcImg, dx, dy, dw, dh);
 
-        var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.5);
 
         document.getElementById('cropOverlay').classList.remove('visible');
+
+        // Update locally first so UI is instant
+        setAvatar(dataUrl);
+        localStorage.setItem('rdota_avatar', dataUrl);
 
         var statusEl = document.getElementById('avatarStatus');
         statusEl.textContent = 'Saving...';
@@ -472,13 +476,16 @@
           data: { avatar_url: dataUrl }
         }).then(function(updateRes) {
           if (updateRes.error) {
-            statusEl.textContent = 'Failed to save — ' + updateRes.error.message;
-            statusEl.style.color = '#ff6b6b';
+            statusEl.textContent = 'Saved locally — sync failed: ' + updateRes.error.message;
+            statusEl.style.color = '#f39c12';
+            setTimeout(function() { statusEl.textContent = ''; }, 3000);
             return;
           }
-          setAvatar(dataUrl);
-          localStorage.setItem('rdota_avatar', dataUrl);
           statusEl.textContent = 'Updated!';
+          statusEl.style.color = '#00cec9';
+          setTimeout(function() { statusEl.textContent = ''; }, 2000);
+        }).catch(function(err) {
+          statusEl.textContent = 'Saved locally';
           statusEl.style.color = '#00cec9';
           setTimeout(function() { statusEl.textContent = ''; }, 2000);
         });
