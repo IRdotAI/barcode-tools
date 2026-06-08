@@ -494,7 +494,14 @@
       document.getElementById('signoutBtn').addEventListener('click', function() {
         localStorage.removeItem('rdota_avatar');
         localStorage.removeItem('rdota_initial');
-        sb.auth.signOut().then(function() { window.location.href = 'login.html'; });
+        localStorage.removeItem('disclaimer_accepted');
+        localStorage.removeItem('sains_history');
+        localStorage.removeItem('ean13_history');
+        sb.auth.signOut({ scope: 'local' }).then(function() {
+          window.location.href = 'login.html';
+        }).catch(function() {
+          window.location.href = 'login.html';
+        });
       });
 
       document.getElementById('upgradeBtn').addEventListener('click', function() {
