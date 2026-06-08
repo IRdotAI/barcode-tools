@@ -197,13 +197,21 @@
 
   /**
    * Gate function — call BEFORE generating. Returns true if allowed, shows banner if not.
+   * Has a 1.5s hard timeout — if the server doesn't respond fast, just allow it.
    */
-  async function canGenerate(sb) {
+  function canGenerate(sb) {
+    return Promise.race([
+      _canGenerateInner(sb),
+      new Promise(function(resolve) { setTimeout(function() { resolve(true); }, 1500); })
+    ]).catch(function() { return true; });
+  }
+
+  async function _canGenerateInner(sb) {
     try {
       injectStyles();
 
       var session = (await sb.auth.getSession()).data.session;
-      if (!session) return true; /* not logged in, page will redirect or handle */
+      if (!session) return true;
 
       /* Check if premium (stored in user metadata) */
       var meta = session.user.user_metadata || {};
@@ -216,7 +224,7 @@
       return false;
     } catch (e) {
       console.warn('Rate limit check failed, allowing generation:', e);
-      return true; /* fail open — never block generation due to a bug */
+      return true;
     }
   }
 
