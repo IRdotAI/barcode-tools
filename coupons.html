@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Coupon Web Scraper</title>
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="RdotA.png">
@@ -19,23 +19,26 @@
     }
 
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-card: #12121a;
-      --bg-input: #1a1a26;
-      --border: #2a2a3a;
-      --text-primary: #e8e8f0;
-      --text-secondary: #8888a0;
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --input-bg: rgba(44, 44, 46, 0.8);
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
       --accent: #6c5ce7;
+      --accent-light: #a78bfa;
       --accent-hover: #7d6ff0;
-      --success: #2ecc71;
-      --warning: #f39c12;
-      --danger: #ff6b6b;
+      --success: #30d158;
+      --warning: #ff9f0a;
+      --danger: #ff453a;
       --radius: 12px;
+      --card-radius: 16px;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg-primary);
+      background: var(--bg);
       color: var(--text-primary);
       padding: 24px;
       min-height: 100vh;
@@ -84,8 +87,8 @@
     }
 
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
+      background: var(--card);
+      border: 0.5px solid var(--separator);
       border-radius: 16px;
       padding: 28px;
       margin-bottom: 24px;
@@ -117,8 +120,8 @@
 
     input, select {
       width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
+      background: var(--input-bg);
+      border: 0.5px solid var(--separator);
       border-radius: var(--radius);
       padding: 16px;
       color: var(--text-primary);
@@ -168,7 +171,7 @@
     }
 
     .btn-search:disabled {
-      background: var(--border);
+      background: var(--separator);
       color: var(--text-secondary);
       cursor: not-allowed;
       transform: none;
@@ -211,7 +214,7 @@
       margin-bottom: 16px;
       margin-top: 40px;
       padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 0.5px solid var(--separator);
     }
 
     .results-count {
@@ -227,8 +230,8 @@
     }
 
     .coupon-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
+      background: var(--card);
+      border: 0.5px solid var(--separator);
       border-radius: var(--radius);
       padding: 20px;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -271,8 +274,8 @@
     }
 
     .coupon-code-box {
-      background: var(--bg-input);
-      border: 1px dashed var(--border);
+      background: var(--input-bg);
+      border: 1px dashed var(--separator);
       padding: 12px;
       border-radius: 8px;
       display: flex;
@@ -307,8 +310,8 @@
       text-align: center;
       padding: 60px 20px;
       color: var(--text-secondary);
-      background: var(--bg-card);
-      border: 1px dashed var(--border);
+      background: var(--card);
+      border: 1px dashed var(--separator);
       border-radius: var(--radius);
       grid-column: 1 / -1;
     }
@@ -458,7 +461,7 @@
       if (!store) {
         storeInput.focus();
         storeInput.style.borderColor = 'var(--danger)';
-        setTimeout(() => storeInput.style.borderColor = 'var(--border)', 1000);
+        setTimeout(() => storeInput.style.borderColor = 'var(--separator)', 1000);
         return;
       }
 
@@ -547,7 +550,7 @@
         
         setTimeout(() => {
           element.innerHTML = originalHtml;
-          element.style.borderColor = 'var(--border)';
+          element.style.borderColor = 'var(--separator)';
         }, 2000);
       });
     }

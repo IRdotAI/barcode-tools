@@ -33,17 +33,16 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    html { height: 100%; background: var(--bg); }
+    html, body { height: 100%; overflow: hidden; background: var(--bg); }
 
     body {
       font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
       background: var(--bg);
       color: var(--text-primary);
-      min-height: 100%;
+      display: flex;
+      flex-direction: column;
       -webkit-font-smoothing: antialiased;
       -webkit-tap-highlight-color: transparent;
-      overflow-y: auto;
-      overflow-x: hidden;
     }
 
     /* iOS-style nav bar */
@@ -87,10 +86,14 @@
 
     /* Scroll container */
     .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 0 20px;
       padding-bottom: calc(var(--safe-bottom) + 40px);
       max-width: 500px;
       margin: 0 auto;
+      width: 100%;
     }
 
     /* Avatar section */

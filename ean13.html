@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>EAN-13 Barcode Generator</title>
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="RdotA.png">
@@ -23,25 +23,27 @@
     }
 
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-card: #12121a;
-      --bg-input: #1a1a26;
-      --border: #2a2a3a;
-      --border-focus: #6c5ce7;
-      --text-primary: #e8e8f0;
-      --text-secondary: #8888a0;
-      --text-muted: #55556a;
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --card-solid: #1c1c1e;
+      --input-bg: rgba(44, 44, 46, 0.8);
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
       --accent: #6c5ce7;
+      --accent-light: #a78bfa;
       --accent-hover: #7d6ff0;
       --accent-glow: rgba(108, 92, 231, 0.25);
-      --success: #00cec9;
-      --danger: #ff6b6b;
+      --success: #30d158;
+      --danger: #ff453a;
       --radius: 12px;
+      --card-radius: 16px;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: var(--bg);
       color: var(--text-primary);
       min-height: 100vh;
       display: flex;
@@ -49,30 +51,6 @@
       justify-content: center;
       padding: 24px;
       overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: -40%;
-      left: -20%;
-      width: 60%;
-      height: 80%;
-      background: radial-gradient(circle, rgba(108, 92, 231, 0.06) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -40%;
-      right: -20%;
-      width: 60%;
-      height: 80%;
-      background: radial-gradient(circle, rgba(0, 206, 201, 0.04) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     .container {
@@ -120,16 +98,12 @@
     }
 
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      background: var(--card);
+      -webkit-backdrop-filter: saturate(120%) blur(40px);
+      backdrop-filter: saturate(120%) blur(40px);
+      border-radius: var(--card-radius);
       padding: 28px;
       margin-bottom: 20px;
-      transition: border-color 0.3s ease;
-    }
-
-    .card:hover {
-      border-color: #3a3a4a;
     }
 
     .input-group {
@@ -158,8 +132,8 @@
     input[type="text"] {
       width: 100%;
       padding: 14px 16px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
+      background: var(--input-bg);
+      border: none;
       border-radius: var(--radius);
       color: var(--text-primary);
       font-family: 'Inter', monospace;
@@ -171,14 +145,13 @@
     }
 
     input[type="text"]::placeholder {
-      color: var(--text-muted);
+      color: var(--text-tertiary);
       letter-spacing: 1px;
       font-size: 14px;
     }
 
     input[type="text"]:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      box-shadow: 0 0 0 2px var(--accent);
     }
 
     .check-digit-display {
@@ -187,8 +160,8 @@
       justify-content: center;
       min-width: 54px;
       height: 54px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
+      background: var(--input-bg);
+      border: 1px solid var(--separator);
       border-radius: var(--radius);
       font-size: 22px;
       font-weight: 700;
@@ -208,7 +181,7 @@
       gap: 6px;
       margin-top: 8px;
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
     }
 
     .info-text.success-text {
@@ -265,9 +238,9 @@
     }
 
     .btn-template {
-      background: var(--bg-input);
+      background: var(--input-bg);
       color: var(--text-primary);
-      border: 1px solid var(--border);
+      border: 1px solid var(--separator);
     }
 
     .btn-template:hover {
@@ -328,12 +301,12 @@
       padding: 12px;
       background: transparent;
       color: var(--success);
-      border: 1px solid rgba(0, 206, 201, 0.3);
+      border: 1px solid rgba(48, 209, 88, 0.3);
       font-size: 13px;
     }
 
     .btn-download:hover {
-      background: rgba(0, 206, 201, 0.06);
+      background: rgba(48, 209, 88, 0.06);
       border-color: var(--success);
     }
 
@@ -365,7 +338,7 @@
     .btn-clear-history {
       background: none;
       border: none;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
       font-size: 12px;
       cursor: pointer;
       padding: 4px 8px;
@@ -394,7 +367,7 @@
     }
 
     .history-list::-webkit-scrollbar-thumb {
-      background: var(--border);
+      background: var(--separator);
       border-radius: 4px;
     }
 
@@ -406,7 +379,7 @@
       margin-bottom: 6px;
       user-select: none;
       touch-action: pan-y;
-      background: #ff3b30; /* iOS Red background behind sliding element */
+      background: var(--danger); /* iOS Red background behind sliding element */
     }
 
     .history-delete-btn {
@@ -432,18 +405,18 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 14px;
-      background: var(--bg-input);
+      background: var(--input-bg);
       border-radius: 8px;
       cursor: pointer;
       position: relative;
       z-index: 2;
-      border: 1px solid var(--bg-input);
+      border: 1px solid var(--input-bg);
       margin-bottom: 0;
     }
 
     .history-item:hover {
-      border-color: var(--border);
-      background: #1e1e2a;
+      border-color: var(--separator);
+      background: rgba(44, 44, 46, 1);
     }
 
     .history-item-code {
@@ -455,14 +428,14 @@
 
     .history-item-time {
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
     }
 
     .empty-history {
       text-align: center;
       padding: 20px;
       font-size: 13px;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
     }
 
     @media (max-width: 480px) {
@@ -492,9 +465,9 @@
 
 <body>
   <div class="container">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
-      <a href="index.html" class="back-link" style="margin-bottom:0;">← Back</a>
-      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid #2a2a3a;overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
+    <div style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,0.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(84,84,88,0.34);padding:12px 20px;padding-top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;align-items:center;justify-content:space-between;margin:-24px -24px 24px -24px;">
+      <a href="index.html" class="back-link" style="margin-bottom:0;color:#a78bfa;text-decoration:none;font-size:17px;display:inline-flex;align-items:center;gap:6px;"><svg width="13" height="21" viewBox="0 0 13 21" fill="none"><path d="M11 1.5L1.5 10.5L11 19.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</a>
+      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--separator);overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="rgba(235,235,245,0.3)"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="rgba(235,235,245,0.3)"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
     </div>
 
     <div class="header">

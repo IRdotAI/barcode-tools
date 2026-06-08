@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>EAN-13 Template Reference</title>
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="RdotA.png">
@@ -23,41 +23,32 @@
     }
 
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-card: #12121a;
-      --bg-input: #1a1a26;
-      --border: #2a2a3a;
-      --text-primary: #e8e8f0;
-      --text-secondary: #8888a0;
-      --text-muted: #55556a;
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --input-bg: rgba(44, 44, 46, 0.8);
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
       --accent: #6c5ce7;
+      --accent-light: #a78bfa;
       --accent-hover: #7d6ff0;
       --accent-glow: rgba(108, 92, 231, 0.25);
-      --success: #00cec9;
-      --danger: #ff6b6b;
+      --success: #30d158;
+      --danger: #ff453a;
       --radius: 12px;
+      --card-radius: 16px;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: var(--bg);
       color: var(--text-primary);
       min-height: 100vh;
       padding: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: -40%;
-      left: -20%;
-      width: 60%;
-      height: 80%;
-      background: radial-gradient(circle, rgba(108, 92, 231, 0.06) 0%, transparent 70%);
-      pointer-events: none;
     }
 
     .container {
@@ -107,9 +98,10 @@
 
     /* Template diagram */
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      background: var(--card);
+      -webkit-backdrop-filter: saturate(120%) blur(40px);
+      backdrop-filter: saturate(120%) blur(40px);
+      border-radius: var(--card-radius);
       padding: 28px;
       margin-bottom: 20px;
     }
@@ -128,14 +120,13 @@
       display: flex;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid var(--border);
     }
 
     .structure-seg {
       flex: 1;
       padding: 20px 12px;
       text-align: center;
-      border-right: 1px solid var(--border);
+      border-right: 1px solid var(--separator);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -168,7 +159,7 @@
 
     .seg-desc {
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
       line-height: 1.4;
     }
 
@@ -198,7 +189,7 @@
       display: flex;
       align-items: flex-start;
       padding: 16px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--separator);
       gap: 16px;
     }
 
@@ -263,7 +254,7 @@
     .detail-length {
       font-size: 11px;
       font-weight: 500;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
       margin-top: 4px;
     }
 
@@ -274,7 +265,6 @@
       gap: 0;
       border-radius: 10px;
       overflow: hidden;
-      border: 1px solid var(--border);
       margin-top: 4px;
     }
 
@@ -285,7 +275,7 @@
       font-size: 16px;
       font-weight: 700;
       letter-spacing: 2px;
-      border-right: 1px solid var(--border);
+      border-right: 1px solid var(--separator);
     }
 
     .example-seg:last-child {
@@ -331,7 +321,7 @@
       text-align: center;
       font-size: 10px;
       font-weight: 500;
-      color: var(--text-muted);
+      color: var(--text-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -398,7 +388,7 @@
 
       .structure-seg {
         border-right: none;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px solid var(--separator);
         flex-direction: row;
         align-items: center;
         gap: 12px;
@@ -421,7 +411,7 @@
 
       .example-seg {
         border-right: none;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px solid var(--separator);
         padding: 10px 16px;
         width: 100%;
         display: flex;
@@ -438,15 +428,8 @@
 <body>
   <div class="container">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
-      <a href="index.html" class="back-link" style="margin-bottom:0;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12" />
-          <polyline points="12 19 5 12 12 5" />
-        </svg>
-        Back to Generator
-      </a>
-      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid #2a2a3a;overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
+      <a href="index.html" style="display:flex;align-items:center;gap:4px;color:#a78bfa;text-decoration:none;font-size:17px;"><svg width="13" height="21" viewBox="0 0 13 21" fill="none"><path d="M11 1.5L1.5 10.5L11 19.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
+      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--separator);overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
     </div>
 
     <div class="header">

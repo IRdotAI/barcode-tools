@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Coupon Wallet</title>
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="RdotA.png">
@@ -26,21 +26,29 @@
     }
 
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-card: #12121a;
-      --border: #2a2a3a;
-      --text-primary: #e8e8f0;
-      --text-secondary: #8888a0;
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --input-bg: rgba(44, 44, 46, 0.8);
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
       --accent: #6c5ce7;
+      --accent-light: #a78bfa;
+      --accent-hover: #7d6ff0;
+      --success: #30d158;
+      --danger: #ff453a;
       --radius: 16px;
+      --card-radius: 16px;
     }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: var(--bg);
       color: var(--text-primary);
       min-height: 100vh;
       padding: 24px;
+      -webkit-font-smoothing: antialiased;
     }
 
     .header-bar {
@@ -174,8 +182,8 @@
     }
 
     .modal {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
+      background: var(--card);
+      border: 1px solid var(--separator);
       border-radius: var(--radius);
       width: 100%;
       max-width: 700px;
@@ -188,7 +196,7 @@
 
     .modal-header {
       padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--separator);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -230,7 +238,7 @@
 
     .template-card {
       background: #1a1a26;
-      border: 2px solid var(--border);
+      border: 2px solid var(--separator);
       border-radius: 12px;
       padding: 16px;
       cursor: pointer;

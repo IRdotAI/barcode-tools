@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Batch Barcode Generator</title>
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="RdotA.png">
@@ -20,21 +20,26 @@
     }
 
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-card: #12121a;
-      --bg-input: #1a1a26;
-      --border: #2a2a3a;
-      --text-primary: #e8e8f0;
-      --text-secondary: #8888a0;
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --input-bg: rgba(44, 44, 46, 0.8);
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
       --accent: #6c5ce7;
+      --accent-light: #a78bfa;
       --accent-hover: #7d6ff0;
-      --danger: #ff6b6b;
+      --success: #30d158;
+      --warning: #ff9f0a;
+      --danger: #ff453a;
       --radius: 12px;
+      --card-radius: 16px;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: var(--bg);
       color: var(--text-primary);
       padding: 24px;
     }
@@ -64,14 +69,14 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--text-secondary);
+      color: #a78bfa;
       text-decoration: none;
       font-size: 14px;
       font-weight: 600;
       transition: color 0.2s;
     }
 
-    .back-link:hover { color: var(--accent); }
+    .back-link:hover { color: var(--accent-light); }
 
     .title {
       font-size: 28px;
@@ -82,9 +87,11 @@
     }
 
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      background: var(--card);
+      -webkit-backdrop-filter: saturate(120%) blur(40px);
+      backdrop-filter: saturate(120%) blur(40px);
+      border: none;
+      border-radius: var(--card-radius);
       padding: 28px;
       margin-bottom: 24px;
     }
@@ -112,12 +119,12 @@
 
     input {
       width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
+      background: var(--input-bg);
+      border: none;
       border-radius: var(--radius);
       padding: 16px;
       color: var(--text-primary);
-      font-family: 'Inter', monospace;
+      font-family: -apple-system, 'Inter', monospace;
       font-size: 16px;
       font-weight: 600;
       outline: none;
@@ -125,8 +132,7 @@
     }
 
     input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+      box-shadow: 0 0 0 2px var(--accent);
     }
 
     .btn-generate {
@@ -135,8 +141,8 @@
       background: var(--accent);
       color: #fff;
       border: none;
-      border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
+      border-radius: 14px;
+      font-family: -apple-system, 'Inter', sans-serif;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
@@ -154,8 +160,8 @@
     }
 
     .btn-generate:disabled {
-      background: var(--border);
-      color: var(--text-muted);
+      background: var(--separator);
+      color: var(--text-tertiary);
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
@@ -166,9 +172,9 @@
       padding: 14px;
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
+      border: 1px solid var(--separator);
+      border-radius: 14px;
+      font-family: -apple-system, 'Inter', sans-serif;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
@@ -248,19 +254,16 @@
   <div class="no-print">
     <div class="header-bar">
       <a href="index.html" class="back-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
+        <svg width="13" height="21" viewBox="0 0 13 21" fill="none" style="vertical-align:middle;margin-right:4px;"><path d="M11 1.5L1.5 10.5L11 19.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Back
       </a>
       <h1 class="title">Batch Print</h1>
-      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid #2a2a3a;overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
+      <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid rgba(84,84,88,0.34);overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="#55556a"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="#55556a"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
     </div>
 
     <div class="card">
       <!-- Live Format Preview -->
-      <div class="format-info" style="background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px;">
+      <div class="format-info" style="background: var(--input-bg); border: 1px solid var(--separator); border-radius: var(--radius); padding: 16px; margin-bottom: 20px;">
         <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;">Live Preview</div>
         <div id="livePreview" style="font-family: 'Inter', monospace; font-size: 22px; font-weight: 700; letter-spacing: 3px; color: var(--text-primary);"></div>
         <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
