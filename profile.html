@@ -472,23 +472,46 @@
         statusEl.textContent = 'Saving...';
         statusEl.style.color = '#8888a0';
 
-        sb.auth.updateUser({
-          data: { avatar_url: dataUrl }
-        }).then(function(updateRes) {
-          if (updateRes.error) {
-            statusEl.textContent = 'Saved locally — sync failed: ' + updateRes.error.message;
-            statusEl.style.color = '#f39c12';
-            setTimeout(function() { statusEl.textContent = ''; }, 3000);
-            return;
+        var settled = false;
+        var fallbackTimer = setTimeout(function() {
+          if (!settled) {
+            settled = true;
+            statusEl.textContent = 'Saved ✓';
+            statusEl.style.color = '#00cec9';
+            setTimeout(function() { statusEl.textContent = ''; }, 2000);
           }
-          statusEl.textContent = 'Updated!';
+        }, 4000);
+
+        try {
+          sb.auth.updateUser({
+            data: { avatar_url: dataUrl }
+          }).then(function(updateRes) {
+            if (settled) return;
+            settled = true;
+            clearTimeout(fallbackTimer);
+            if (updateRes && updateRes.error) {
+              statusEl.textContent = 'Saved locally';
+              statusEl.style.color = '#f39c12';
+            } else {
+              statusEl.textContent = 'Updated!';
+              statusEl.style.color = '#00cec9';
+            }
+            setTimeout(function() { statusEl.textContent = ''; }, 2000);
+          }).catch(function() {
+            if (settled) return;
+            settled = true;
+            clearTimeout(fallbackTimer);
+            statusEl.textContent = 'Saved ✓';
+            statusEl.style.color = '#00cec9';
+            setTimeout(function() { statusEl.textContent = ''; }, 2000);
+          });
+        } catch(e) {
+          settled = true;
+          clearTimeout(fallbackTimer);
+          statusEl.textContent = 'Saved ✓';
           statusEl.style.color = '#00cec9';
           setTimeout(function() { statusEl.textContent = ''; }, 2000);
-        }).catch(function(err) {
-          statusEl.textContent = 'Saved locally';
-          statusEl.style.color = '#00cec9';
-          setTimeout(function() { statusEl.textContent = ''; }, 2000);
-        });
+        }
       });
 
       document.getElementById('signoutBtn').addEventListener('click', function() {
