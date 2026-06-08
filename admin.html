@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Admin — RdotA</title>
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="RdotA.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --card-solid: #1c1c1e;
+      --input-bg: rgba(44, 44, 46, 0.8);
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
+      --accent: #6c5ce7;
+      --accent-light: #a78bfa;
+      --blue: #0a84ff;
+      --red: #ff453a;
+      --green: #30d158;
+      --orange: #ff9f0a;
+      --card-radius: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Nav bar */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      padding-top: calc(var(--safe-top) + 14px);
+      background: rgba(0, 0, 0, 0.72);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 0.5px solid var(--separator);
+      min-height: 44px;
+    }
+
+    .nav-back {
+      position: absolute;
+      left: 8px;
+      bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-light);
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 400;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+
+    .nav-back svg { flex-shrink: 0; }
+
+    .nav-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    /* Scrollable content */
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px;
+      padding-bottom: calc(var(--safe-bottom) + 24px);
+    }
+
+    /* Denied screen */
+    .denied {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .denied-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 69, 58, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .denied h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .denied p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Search bar */
+    .search-bar {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px 16px 12px 40px;
+      background: var(--input-bg);
+      border: none;
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 17px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .search-bar input:focus {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .search-bar svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      -webkit-backdrop-filter: saturate(150%) blur(20px);
+      backdrop-filter: saturate(150%) blur(20px);
+      border-radius: var(--card-radius);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .stat-value.accent { color: var(--accent-light); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.orange { color: var(--orange); }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 4px;
+      margin-bottom: 10px;
+    }
+
+    /* User list */
+    .user-list {
+      background: var(--card);
+      -webkit-backdrop-filter: saturate(150%) blur(20px);
+      backdrop-filter: saturate(150%) blur(20px);
+      border-radius: var(--card-radius);
+      overflow: hidden;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 0.5px solid var(--separator);
+      transition: background 0.15s;
+    }
+
+    .user-item:last-child { border-bottom: none; }
+
+    .user-item:active { background: rgba(255, 255, 255, 0.05); }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--input-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-email {
+      font-size: 15px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-meta .gen-count {
+      color: var(--orange);
+      font-weight: 500;
+    }
+
+    /* Premium badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-premium {
+      background: linear-gradient(135deg, rgba(108, 92, 231, 0.25), rgba(167, 139, 250, 0.25));
+      color: var(--accent-light);
+    }
+
+    .badge-free {
+      background: rgba(142, 142, 147, 0.18);
+      color: var(--text-secondary);
+    }
+
+    /* Toggle switch */
+    .toggle-wrap {
+      flex-shrink: 0;
+    }
+
+    .toggle {
+      position: relative;
+      width: 51px;
+      height: 31px;
+      border-radius: 16px;
+      background: rgba(120, 120, 128, 0.32);
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s ease;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .toggle.active {
+      background: var(--green);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      transition: transform 0.25s ease;
+    }
+
+    .toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    .toggle:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state svg {
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+
+    .empty-state p {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    /* Loading spinner */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--separator);
+      border-top-color: var(--accent-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + 20px);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-solid);
+      color: var(--text-primary);
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 9999;
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(.32,.72,0,1), opacity 0.35s ease;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Nav bar -->
+  <div class="nav-bar">
+    <a href="index.html" class="nav-back">
+      <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
+        <path d="M10 2L2 10L10 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back
+    </a>
+    <span class="nav-title">Admin</span>
+  </div>
+
+  <!-- Access denied screen (hidden by default) -->
+  <div class="denied" id="deniedScreen" style="display:none;">
+    <div class="denied-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff453a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+      </svg>
+    </div>
+    <h2>Access Denied</h2>
+    <p>This page is restricted to administrators only.</p>
+  </div>
+
+  <!-- Loading screen -->
+  <div class="loading" id="loadingScreen">
+    <div class="spinner"></div>
+    <p>Verifying access...</p>
+  </div>
+
+  <!-- Admin panel (hidden until auth check passes) -->
+  <div class="scroll-content" id="adminPanel" style="display:none;">
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <div class="stat-value accent" id="statTotal">—</div>
+        <div class="stat-label">Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value green" id="statPremium">—</div>
+        <div class="stat-label">Premium</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value orange" id="statGens">—</div>
+        <div class="stat-label">Gens Today</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search users by email...">
+    </div>
+
+    <!-- User list -->
+    <div class="section-label" id="userCount">All Users</div>
+    <div class="user-list" id="userList">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading users...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var ADMIN_EMAIL = 'abrasive.tax@gmail.com';
+    var sb = window.supabase.createClient(
+      'https://dvzwupfryffqptjyxlmn.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY'
+    );
+
+    var allUsers = [];
+    var pendingToggles = {};
+
+    /* ── Toast ── */
+    var toastTimer = null;
+    function showToast(msg, duration) {
+      var el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { el.classList.remove('visible'); }, duration || 2500);
+    }
+
+    /* ── Auth gate ── */
+    async function init() {
+      var res = await sb.auth.getSession();
+      var session = res.data && res.data.session;
+
+      document.getElementById('loadingScreen').style.display = 'none';
+
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      if (session.user.email !== ADMIN_EMAIL) {
+        document.getElementById('deniedScreen').style.display = 'flex';
+        return;
+      }
+
+      /* Admin verified */
+      document.getElementById('adminPanel').style.display = 'block';
+      loadUsers();
+    }
+
+    /* ── Load all users via RPC ── */
+    async function loadUsers() {
+      var { data, error } = await sb.rpc('admin_list_users');
+
+      if (error) {
+        document.getElementById('userList').innerHTML =
+          '<div class="empty-state"><p>Failed to load users.<br><br>Make sure you ran the SQL setup:<br><code>supabase-admin-setup.sql</code></p></div>';
+        console.error('admin_list_users error:', error);
+        return;
+      }
+
+      allUsers = data || [];
+
+      /* Stats */
+      var premiumCount = 0;
+      var gensToday = 0;
+      allUsers.forEach(function (u) {
+        if (u.is_premium) premiumCount++;
+        gensToday += (u.gens_today || 0);
+      });
+
+      document.getElementById('statTotal').textContent = allUsers.length;
+      document.getElementById('statPremium').textContent = premiumCount;
+      document.getElementById('statGens').textContent = gensToday;
+
+      renderUsers(allUsers);
+    }
+
+    /* ── Render user list ── */
+    function renderUsers(users) {
+      var list = document.getElementById('userList');
+      var label = document.getElementById('userCount');
+
+      if (!users.length) {
+        list.innerHTML = '<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No users found</p></div>';
+        label.textContent = 'No Results';
+        return;
+      }
+
+      label.textContent = users.length === allUsers.length
+        ? 'All Users (' + users.length + ')'
+        : 'Results (' + users.length + ')';
+
+      var html = '';
+      users.forEach(function (u) {
+        var initial = (u.email || '?')[0].toUpperCase();
+        var avatar = u.avatar_url
+          ? '<img src="' + u.avatar_url + '" alt="">'
+          : initial;
+        var isPremium = !!u.is_premium;
+        var badgeClass = isPremium ? 'badge-premium' : 'badge-free';
+        var badgeText = isPremium ? 'Premium' : 'Free';
+        var created = u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        var isAdmin = u.email === ADMIN_EMAIL;
+        var toggleActive = isPremium ? ' active' : '';
+        var toggleDisabled = isAdmin ? ' disabled' : '';
+        var gensLabel = u.gens_today > 0 ? '<span class="gen-count">' + u.gens_today + ' gens today</span>' : '';
+
+        html += '<div class="user-item" data-uid="' + u.id + '">'
+          + '<div class="user-avatar">' + avatar + '</div>'
+          + '<div class="user-info">'
+          + '  <div class="user-email">' + u.email + (isAdmin ? ' <span style="color:var(--orange);font-size:11px;">ADMIN</span>' : '') + '</div>'
+          + '  <div class="user-meta"><span>' + created + '</span> <span class="badge ' + badgeClass + '">' + badgeText + '</span> ' + gensLabel + '</div>'
+          + '</div>'
+          + '<div class="toggle-wrap"><button class="toggle' + toggleActive + '"' + toggleDisabled + ' data-uid="' + u.id + '" data-email="' + u.email + '" onclick="togglePremium(this)"></button></div>'
+          + '</div>';
+      });
+
+      list.innerHTML = html;
+    }
+
+    /* ── Toggle premium ── */
+    async function togglePremium(btn) {
+      var uid = btn.getAttribute('data-uid');
+      var email = btn.getAttribute('data-email');
+
+      if (pendingToggles[uid]) return;
+      pendingToggles[uid] = true;
+      btn.disabled = true;
+
+      var makePremium = !btn.classList.contains('active');
+
+      var { data, error } = await sb.rpc('admin_set_premium', {
+        target_email: email,
+        is_premium: makePremium
+      });
+
+      pendingToggles[uid] = false;
+      btn.disabled = false;
+
+      if (error) {
+        showToast('Failed: ' + (error.message || 'Unknown error'));
+        console.error('admin_set_premium error:', error);
+        return;
+      }
+
+      /* Update UI */
+      if (makePremium) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+
+      /* Update badge in same row */
+      var item = btn.closest('.user-item');
+      var badge = item.querySelector('.badge');
+      if (badge) {
+        badge.className = 'badge ' + (makePremium ? 'badge-premium' : 'badge-free');
+        badge.textContent = makePremium ? 'Premium' : 'Free';
+      }
+
+      /* Update local data */
+      allUsers.forEach(function (u) { if (u.id === uid) u.is_premium = makePremium; });
+      var premiumCount = allUsers.filter(function (u) { return u.is_premium; }).length;
+      document.getElementById('statPremium').textContent = premiumCount;
+
+      showToast(makePremium ? 'Upgraded ' + email + ' to Premium' : 'Revoked Premium from ' + email);
+    }
+
+    /* ── Search ── */
+    var searchTimeout = null;
+    document.getElementById('searchInput').addEventListener('input', function () {
+      clearTimeout(searchTimeout);
+      var q = this.value.trim().toLowerCase();
+      searchTimeout = setTimeout(function () {
+        if (!q) {
+          renderUsers(allUsers);
+          return;
+        }
+        var filtered = allUsers.filter(function (u) {
+          return u.email && u.email.toLowerCase().indexOf(q) !== -1;
+        });
+        renderUsers(filtered);
+      }, 200);
+    });
+
+    /* ── Go ── */
+    init();
+  </script>
+</body>
+
+</html>

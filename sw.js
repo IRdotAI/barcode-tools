@@ -1,10 +1,11 @@
-const CACHE_NAME = 'barcode-tools-v20';
+const CACHE_NAME = 'barcode-tools-v21';
 const ASSETS = [
   './',
   './index.html',
   './sainsbury.html',
   './login.html',
   './profile.html',
+  './admin.html',
   './ean13.html',
   './template.html',
   './reader.html',
