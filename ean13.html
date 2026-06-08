@@ -533,7 +533,6 @@
     </div>
   </div>
 
-  <script src="ratelimit.js"></script>
   <script>
     var sb = window.supabase.createClient('https://dvzwupfryffqptjyxlmn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY');
 
@@ -593,16 +592,6 @@
     generateBtn.addEventListener('click', generateBarcode);
 
     function generateBarcode() {
-      if (window.RdotaRateLimit) {
-        RdotaRateLimit.canGenerate(sb).then(function(allowed) {
-          if (allowed) _doGenerate();
-        }).catch(function() { _doGenerate(); });
-        return;
-      }
-      _doGenerate();
-    }
-
-    function _doGenerate() {
       const val = input.value.replace(/\D/g, '');
       if (val.length !== 12) return;
 
@@ -638,10 +627,6 @@
 
         addToHistory(full);
 
-        /* Log generation server-side for rate limiting */
-        if (window.RdotaRateLimit) {
-          RdotaRateLimit.logGeneration(sb, 'ean13');
-        }
       } catch (err) {
         console.error('Barcode generation error:', err);
       }
