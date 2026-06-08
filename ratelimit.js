@@ -182,33 +182,42 @@
    * Log a successful generation (INSERT — server sets created_at via default now()).
    */
   async function logGeneration(sb, generatorType) {
-    var session = (await sb.auth.getSession()).data.session;
-    if (!session) return;
+    try {
+      var session = (await sb.auth.getSession()).data.session;
+      if (!session) return;
 
-    await sb.from('generations').insert({
-      user_id: session.user.id,
-      generator_type: generatorType || 'unknown'
-    });
+      await sb.from('generations').insert({
+        user_id: session.user.id,
+        generator_type: generatorType || 'unknown'
+      });
+    } catch (e) {
+      console.warn('Failed to log generation:', e);
+    }
   }
 
   /**
    * Gate function — call BEFORE generating. Returns true if allowed, shows banner if not.
    */
   async function canGenerate(sb) {
-    injectStyles();
+    try {
+      injectStyles();
 
-    var session = (await sb.auth.getSession()).data.session;
-    if (!session) return true; /* not logged in, page will redirect or handle */
+      var session = (await sb.auth.getSession()).data.session;
+      if (!session) return true; /* not logged in, page will redirect or handle */
 
-    /* Check if premium (stored in user metadata) */
-    var meta = session.user.user_metadata || {};
-    if (meta.premium === true || meta.tier === 'premium') return true;
+      /* Check if premium (stored in user metadata) */
+      var meta = session.user.user_metadata || {};
+      if (meta.premium === true || meta.tier === 'premium') return true;
 
-    var result = await checkLimit(sb);
-    if (result.allowed) return true;
+      var result = await checkLimit(sb);
+      if (result.allowed) return true;
 
-    showBanner(result.resetAt);
-    return false;
+      showBanner(result.resetAt);
+      return false;
+    } catch (e) {
+      console.warn('Rate limit check failed, allowing generation:', e);
+      return true; /* fail open — never block generation due to a bug */
+    }
   }
 
   /* ── Public API ── */
