@@ -533,12 +533,18 @@
 
       if (error) {
         document.getElementById('userList').innerHTML =
-          '<div class="empty-state"><p>Failed to load users.<br><br>Make sure you ran the SQL setup:<br><code>supabase-admin-setup.sql</code></p></div>';
+          '<div class="empty-state"><p>Failed to load users.<br><br>Error: <strong>' + (error.message || JSON.stringify(error)) + '</strong><br><br>Make sure you ran both SQL files in Supabase SQL Editor:<br>1. <code>supabase-setup.sql</code><br>2. <code>supabase-admin-setup.sql</code></p></div>';
         console.error('admin_list_users error:', error);
         return;
       }
 
-      allUsers = data || [];
+      /* RPC returns JSON — could be array directly or wrapped */
+      var users = data;
+      if (typeof users === 'string') {
+        try { users = JSON.parse(users); } catch(e) {}
+      }
+      if (!Array.isArray(users)) users = [];
+      allUsers = users;
 
       /* Stats */
       var premiumCount = 0;
