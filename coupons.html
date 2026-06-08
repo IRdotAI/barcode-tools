@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="RdotA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -550,6 +551,14 @@
         }, 2000);
       });
     }
+  </script>
+  <script>
+    (function(){
+      var sb=window.supabase.createClient('https://dvzwupfryffqptjyxlmn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY');
+      sb.auth.getSession().then(function(res){
+        if(!res.data||!res.data.session){window.location.href='login.html';return;}
+      });
+    })();
   </script>
 </body>
 </html>
