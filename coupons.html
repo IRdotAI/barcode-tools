@@ -37,11 +37,12 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', sans-serif;
       background: var(--bg);
       color: var(--text-primary);
-      padding: 24px;
+      padding: calc(env(safe-area-inset-top, 20px) + 12px) 24px 24px;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {

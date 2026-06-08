@@ -46,11 +46,9 @@
       background: var(--bg);
       color: var(--text-primary);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding: 0;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
@@ -58,6 +56,8 @@
       z-index: 1;
       width: 100%;
       max-width: 540px;
+      margin: 0 auto;
+      padding: 8px 20px 40px;
     }
 
     .header {
@@ -464,12 +464,12 @@
 </head>
 
 <body>
-  <div class="container">
-    <div style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,0.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(84,84,88,0.34);padding:12px 20px;padding-top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;align-items:center;justify-content:space-between;margin:-24px -24px 24px -24px;">
+  <div style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,0.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(84,84,88,0.34);padding:14px 20px;padding-top:calc(env(safe-area-inset-top, 44px) + 14px);display:flex;align-items:center;justify-content:space-between;">
       <a href="index.html" class="back-link" style="margin-bottom:0;color:#a78bfa;text-decoration:none;font-size:17px;display:inline-flex;align-items:center;gap:6px;"><svg width="13" height="21" viewBox="0 0 13 21" fill="none"><path d="M11 1.5L1.5 10.5L11 19.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</a>
       <a href="profile.html" id="navProfileBtn" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--separator);overflow:hidden;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;text-decoration:none;" title="Profile"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="6" fill="rgba(235,235,245,0.3)"/><ellipse cx="18" cy="32" rx="12" ry="9" fill="rgba(235,235,245,0.3)"/></svg></a><script>(function(){var av=localStorage.getItem('rdota_avatar'),init=localStorage.getItem('rdota_initial'),btn=document.getElementById('navProfileBtn');if(!btn)return;if(av){btn.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;">';}else if(init){btn.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#6c5ce7;color:#fff;font-size:15px;font-weight:700;font-family:Inter,sans-serif;">'+init+'</span>';}})();</script>
-    </div>
+  </div>
 
+  <div class="container">
     <div class="header">
       <h1>EAN-13 Generator</h1>
       <p>Generate valid EAN-13 barcodes with automatic check digit calculation</p>
