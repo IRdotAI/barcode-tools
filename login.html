@@ -173,6 +173,48 @@
       font-size: 12px; color: var(--text-muted);
     }
 
+    .already-logged-in {
+      display: none; text-align: center; padding: 32px 24px;
+    }
+    .already-logged-in.visible { display: block; }
+    .already-logged-in .ali-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      margin: 0 auto 16px; overflow: hidden;
+      border: 3px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--accent); color: #fff;
+      font-size: 28px; font-weight: 700; text-transform: uppercase;
+    }
+    .already-logged-in .ali-avatar img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .already-logged-in h2 {
+      font-size: 20px; font-weight: 700; margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+    .already-logged-in .ali-email {
+      font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;
+    }
+    .already-logged-in .ali-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border: none; border-radius: var(--radius);
+      background: var(--accent); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.25s ease;
+      text-decoration: none; margin-bottom: 12px;
+    }
+    .already-logged-in .ali-btn:hover {
+      background: var(--accent-hover); transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+    .already-logged-in .ali-switch {
+      display: block; margin-top: 8px;
+      font-size: 13px; color: var(--text-muted);
+      background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: color 0.2s;
+    }
+    .already-logged-in .ali-switch:hover { color: var(--danger); }
+
     @media (max-width: 480px) {
       .auth-container { max-width: 100%; }
       .auth-card { padding: 20px; }
@@ -189,6 +231,15 @@
     </div>
 
     <div class="auth-card">
+      <div class="already-logged-in" id="alreadyLoggedIn">
+        <div class="ali-avatar" id="aliAvatar"></div>
+        <h2>You're already signed in</h2>
+        <p class="ali-email" id="aliEmail"></p>
+        <a href="index.html" class="ali-btn">Go to Generators →</a>
+        <button class="ali-switch" id="aliSignOut">Sign out & switch account</button>
+      </div>
+
+      <div id="authForms">
       <div class="auth-tabs">
         <button class="auth-tab active" id="tabLogin">Sign In</button>
         <button class="auth-tab" id="tabSignup">Sign Up</button>
@@ -234,6 +285,7 @@
         </div>
         <button type="submit" class="auth-btn" id="signupBtn">Create Account</button>
       </form>
+      </div>
     </div>
 
     <div class="auth-footer">
@@ -429,7 +481,41 @@
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY'
         );
         sb.auth.getSession().then(function(res) {
-          if (res.data && res.data.session) window.location.href = 'index.html';
+          if (res.data && res.data.session) {
+            var session = res.data.session;
+            var email = session.user.email || '';
+            var avatar = localStorage.getItem('rdota_avatar') || '';
+            var initial = (localStorage.getItem('rdota_initial') || email.charAt(0) || '?').toUpperCase();
+
+            document.getElementById('authForms').style.display = 'none';
+            var panel = document.getElementById('alreadyLoggedIn');
+            panel.style.display = 'flex';
+
+            var aliAvatar = document.getElementById('aliAvatar');
+            if (avatar) {
+              aliAvatar.style.backgroundImage = 'url(' + avatar + ')';
+              aliAvatar.style.backgroundSize = 'cover';
+              aliAvatar.style.backgroundPosition = 'center';
+              aliAvatar.textContent = '';
+            } else {
+              aliAvatar.textContent = initial;
+            }
+
+            document.getElementById('aliEmail').textContent = email;
+
+            document.getElementById('aliSignOut').addEventListener('click', function() {
+              localStorage.removeItem('rdota_avatar');
+              localStorage.removeItem('rdota_initial');
+              localStorage.removeItem('disclaimer_accepted');
+              localStorage.removeItem('sains_history');
+              localStorage.removeItem('ean13_history');
+              sb.auth.signOut({ scope: 'local' }).then(function() {
+                window.location.reload();
+              }).catch(function() {
+                window.location.reload();
+              });
+            });
+          }
         });
       } catch(e) {
         console.error('Supabase init failed:', e);
