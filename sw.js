@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barcode-tools-v19';
+const CACHE_NAME = 'barcode-tools-v20';
 const ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const ASSETS = [
   './wallet.html',
   './batch.html',
   './coupons.html',
+  './ratelimit.js',
   './sainsbury.png',
   './RdotA.png',
   './icon-192.png',

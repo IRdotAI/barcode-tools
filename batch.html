@@ -331,7 +331,9 @@
     <!-- Items generated here -->
   </div>
 
+  <script src="ratelimit.js"></script>
   <script>
+    var sb = window.supabase.createClient('https://dvzwupfryffqptjyxlmn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY');
     const prefixInput = document.getElementById('prefixInput');
     const issuerInput = document.getElementById('issuerInput');
     const productInput = document.getElementById('productInput');
@@ -420,7 +422,13 @@
 
     qtyInput.addEventListener('input', updateGenerateButton);
 
-    generateBtn.addEventListener('click', () => {
+    generateBtn.addEventListener('click', async () => {
+      /* Rate limit check */
+      if (window.RdotaRateLimit) {
+        var allowed = await RdotaRateLimit.canGenerate(sb);
+        if (!allowed) return;
+      }
+
       if (typeof JsBarcode === 'undefined') {
         alert('Barcode library failed to load. Check your internet connection and refresh the page.');
         return;
@@ -431,10 +439,10 @@
       printControls.style.display = 'none';
 
       const qty = parseInt(qtyInput.value, 10);
-      
+
       for (let i = 0; i < qty; i++) {
           const fullCode = generateBarcode();
-          
+
           const item = document.createElement('div');
           item.className = 'print-item';
           item.innerHTML = `
@@ -457,10 +465,15 @@
             console.error('Barcode generation failed for', fullCode, err);
           }
       }
-      
+
       printGrid.classList.add('visible');
       printControls.style.display = 'block';
       printGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      /* Log generation server-side */
+      if (window.RdotaRateLimit) {
+        RdotaRateLimit.logGeneration(sb, 'batch');
+      }
     });
 
     // Initialise
@@ -469,7 +482,6 @@
   </script>
   <script>
     (function(){
-      var sb=window.supabase.createClient('https://dvzwupfryffqptjyxlmn.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY');
       sb.auth.getSession().then(function(res){
         if(!res.data||!res.data.session){window.location.href='login.html';return;}
       });

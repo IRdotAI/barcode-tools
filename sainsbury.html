@@ -646,6 +646,7 @@
     </div>
   </div>
 
+  <script src="ratelimit.js"></script>
   <script>
     const SUPABASE_URL = 'https://dvzwupfryffqptjyxlmn.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2end1cGZyeWZmcXB0anl4bG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjIwMTksImV4cCI6MjA5NjMzODAxOX0.lAIScl3PIpfQEAYd7Im22mjAMQxNHF1663Z5moYO9sY';
@@ -1060,7 +1061,13 @@
 
     let lastGeneratedBarcode = '';
 
-    function generateBarcode() {
+    async function generateBarcode() {
+      /* Rate limit check (server-side, tamper-proof) */
+      if (window.RdotaRateLimit) {
+        var allowed = await RdotaRateLimit.canGenerate(sb);
+        if (!allowed) return;
+      }
+
       document.getElementById('errorMessage').classList.remove('visible');
 
       const productInput = document.getElementById('productCode').value.trim();
@@ -1129,6 +1136,11 @@
         pricePence: priceInPence,
         barcode: fullBarcode,
       });
+
+      /* Log generation server-side for rate limiting */
+      if (window.RdotaRateLimit) {
+        RdotaRateLimit.logGeneration(sb, 'sainsbury');
+      }
     }
 
     document.getElementById('copyBarcode').addEventListener('click', () => {
