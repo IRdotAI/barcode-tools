@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Profile — Barcode Tools</title>
-  <meta name="theme-color" content="#0a0a0f">
+  <title>Profile — RdotA</title>
+  <meta name="theme-color" content="#000000">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="RdotA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,219 +15,419 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-card:    #12121a;
-      --bg-input:   #1a1a26;
-      --border:     #2a2a3a;
-      --text-primary:   #e8e8f0;
-      --text-secondary: #8888a0;
-      --text-muted:     #55556a;
-      --accent:      #6c5ce7;
-      --accent-hover:#7d6ff0;
-      --accent-glow: rgba(108, 92, 231, 0.25);
-      --success: #00cec9;
-      --danger:  #ff6b6b;
-      --radius:  10px;
+      --bg: #000000;
+      --card: rgba(28, 28, 30, 0.82);
+      --card-solid: #1c1c1e;
+      --separator: rgba(84, 84, 88, 0.34);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
+      --accent: #6c5ce7;
+      --accent-light: #a78bfa;
+      --blue: #0a84ff;
+      --red: #ff453a;
+      --green: #30d158;
+      --orange: #ff9f0a;
+      --card-radius: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    html, body { height: 100%; overflow: hidden; }
+    html { height: 100%; background: var(--bg); }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, 'Inter', BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+      background: var(--bg);
       color: var(--text-primary);
+      min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* iOS-style nav bar */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      padding-top: calc(var(--safe-top) + 12px);
+      background: rgba(0, 0, 0, 0.72);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 0.5px solid var(--separator);
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-light);
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 400;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-back svg { flex-shrink: 0; }
+
+    .nav-title {
+      font-size: 17px;
+      font-weight: 600;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-spacer { width: 60px; }
+
+    /* Scroll container */
+    .scroll-content {
+      padding: 0 20px;
+      padding-bottom: calc(var(--safe-bottom) + 40px);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Avatar section */
+    .avatar-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 0 24px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-      padding-bottom: env(safe-area-inset-bottom, 16px);
+      font-size: 38px;
+      font-weight: 600;
+      color: #fff;
+      text-transform: uppercase;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(108, 92, 231, 0.3);
     }
 
-    body::before {
-      content: '';
-      position: fixed; top: -40%; left: -20%; width: 60%; height: 80%;
-      background: radial-gradient(circle, rgba(108,92,231,0.06) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-
-    .profile-container {
-      position: relative; z-index: 1;
-      width: 100%; max-width: 420px;
-      display: flex; flex-direction: column;
-      max-height: 100vh; max-height: 100dvh;
-    }
-
-    .top-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px; flex-shrink: 0;
-    }
-
-    .back-link {
-      color: var(--text-muted); text-decoration: none;
-      font-size: 13px; font-weight: 500; transition: color 0.2s;
-    }
-    .back-link:hover { color: var(--text-primary); }
-
-    .profile-header { text-align: center; margin-bottom: 12px; flex-shrink: 0; }
-
-    .avatar-wrap {
-      position: relative; width: 120px; height: 120px;
-      margin: 0 auto 10px; cursor: pointer;
-    }
-    .avatar {
-      width: 120px; height: 120px; border-radius: 50%;
-      background: var(--accent); display: flex; align-items: center; justify-content: center;
-      font-size: 42px; font-weight: 700; color: #fff; text-transform: uppercase;
-      overflow: hidden; border: 3px solid var(--border); transition: border-color 0.2s;
-    }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-wrap:hover .avatar { border-color: var(--accent); }
 
     .avatar-edit {
-      position: absolute; bottom: 2px; right: 2px;
-      width: 30px; height: 30px; border-radius: 50%;
-      background: var(--accent); border: 2px solid var(--bg-primary);
-      display: flex; align-items: center; justify-content: center;
-      pointer-events: none;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .avatar-status {
-      text-align: center; font-size: 11px; color: var(--success); min-height: 14px;
+      font-size: 13px;
+      color: var(--green);
+      min-height: 18px;
+      margin-bottom: 4px;
     }
 
-    .profile-header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 2px; }
-    .profile-header p { font-size: 12px; color: var(--text-muted); }
-
-    .profile-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; flex-shrink: 0;
-    }
-    .profile-card h2 {
-      font-size: 11px; font-weight: 600; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    .avatar-section h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
     }
 
-    .info-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 0; border-bottom: 1px solid var(--border);
+    .avatar-section p {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
     }
-    .info-row:last-child { border-bottom: none; }
-    .info-label { font-size: 13px; color: var(--text-secondary); }
-    .info-value { font-size: 13px; font-weight: 500; color: var(--text-primary); text-align: right; }
 
+    /* iOS grouped section header */
+    .section-header {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: -0.08px;
+      padding: 24px 20px 8px;
+    }
+
+    /* iOS inset grouped card */
+    .ios-card {
+      background: var(--card);
+      -webkit-backdrop-filter: saturate(120%) blur(40px);
+      backdrop-filter: saturate(120%) blur(40px);
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    /* iOS list row */
+    .ios-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      min-height: 44px;
+      position: relative;
+    }
+
+    .ios-row + .ios-row::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20px;
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+
+    .ios-row-label {
+      font-size: 16px;
+      color: var(--text-primary);
+      font-weight: 400;
+    }
+
+    .ios-row-value {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: right;
+      max-width: 55%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Tier badge */
     .tier-badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
-    .tier-free { background: rgba(136,136,160,0.15); color: var(--text-secondary); border: 1px solid var(--border); }
-    .tier-premium { background: rgba(108,92,231,0.15); color: var(--accent); border: 1px solid var(--accent); }
 
-    .upgrade-btn {
-      width: 100%; padding: 11px 16px; border: none; border-radius: var(--radius);
-      background: var(--accent); color: #fff; font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; margin-top: 4px;
+    .tier-free {
+      background: rgba(142, 142, 147, 0.2);
+      color: rgba(235, 235, 245, 0.6);
     }
-    .upgrade-btn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
 
-    .signout-btn {
-      width: 100%; padding: 11px 16px; border: 1px solid var(--danger); border-radius: var(--radius);
-      background: rgba(255,107,107,0.08); color: var(--danger); font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; flex-shrink: 0;
+    .tier-premium {
+      background: rgba(108, 92, 231, 0.2);
+      color: var(--accent-light);
     }
-    .signout-btn:hover { background: rgba(255,107,107,0.18); }
 
-    .profile-footer { text-align: center; margin-top: 10px; font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+    /* Buttons inside cards */
+    .ios-btn-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      min-height: 44px;
+      position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: inherit;
+    }
 
+    .ios-btn-row:active {
+      background: rgba(120, 120, 128, 0.16);
+    }
+
+    .ios-btn-row + .ios-btn-row::before,
+    .ios-row + .ios-btn-row::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20px;
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+
+    .ios-btn-text {
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .ios-btn-text.accent { color: var(--accent-light); }
+    .ios-btn-text.destructive { color: var(--red); }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      padding: 32px 0 16px;
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    /* Crop overlay — keep dark native feel */
     .crop-overlay {
-      display: none; position: fixed; inset: 0; z-index: 100;
-      background: rgba(0,0,0,0.85); align-items: center; justify-content: center;
-      flex-direction: column; padding: 20px;
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.92);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
     }
+
     .crop-overlay.visible { display: flex; }
 
     .crop-title {
-      color: var(--text-primary); font-size: 16px; font-weight: 600; margin-bottom: 16px;
+      color: var(--text-primary);
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 20px;
     }
 
     .crop-area {
-      position: relative; width: 280px; height: 280px;
-      border-radius: 16px; overflow: hidden; background: #000;
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #000;
       touch-action: none;
     }
+
     .crop-area img {
-      position: absolute; transform-origin: 0 0;
-      max-width: none; max-height: none;
+      position: absolute;
+      transform-origin: 0 0;
+      max-width: none;
+      max-height: none;
     }
+
     .crop-circle {
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       border-radius: 50%;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
       pointer-events: none;
     }
 
     .crop-controls {
-      display: flex; align-items: center; gap: 12px; margin-top: 16px; width: 280px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      width: 280px;
     }
-    .crop-controls label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    .crop-controls label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
     .crop-controls input[type="range"] {
-      flex: 1; accent-color: var(--accent); height: 4px;
+      flex: 1;
+      accent-color: var(--accent);
+      height: 4px;
     }
 
     .crop-buttons {
-      display: flex; gap: 10px; margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
     }
-    .crop-btn {
-      padding: 10px 28px; border-radius: var(--radius); font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
-    }
-    .crop-btn-cancel {
-      background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border);
-    }
-    .crop-btn-save {
-      background: var(--accent); color: #fff;
-    }
-    .crop-btn-save:hover { background: var(--accent-hover); }
 
-    @media (max-height: 700px) {
-      .profile-header { margin-bottom: 8px; }
-      .avatar-wrap { width: 88px; height: 88px; margin-bottom: 6px; }
+    .crop-btn {
+      padding: 12px 32px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s, opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .crop-btn:active { transform: scale(0.97); opacity: 0.8; }
+
+    .crop-btn-cancel {
+      background: rgba(120, 120, 128, 0.24);
+      color: var(--text-primary);
+    }
+
+    .crop-btn-save {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Media queries */
+    @media (max-width: 390px) {
+      .scroll-content { padding: 0 16px; padding-bottom: calc(var(--safe-bottom) + 32px); }
       .avatar { width: 88px; height: 88px; font-size: 32px; }
-      .profile-header h1 { font-size: 16px; }
-      .profile-card { padding: 10px 14px; margin-bottom: 8px; }
-      .profile-card h2 { margin-bottom: 4px; font-size: 10px; }
-      .info-row { padding: 6px 0; }
-      .info-label, .info-value { font-size: 12px; }
-      .upgrade-btn, .signout-btn { padding: 9px 14px; font-size: 12px; }
-      .top-bar { margin-bottom: 8px; }
-      .crop-area { width: 240px; height: 240px; }
-      .crop-controls { width: 240px; }
+      .avatar-wrap { width: 88px; height: 88px; }
     }
 
     @media (max-height: 600px) {
-      body { padding: 10px; }
-      .avatar-wrap { width: 72px; height: 72px; }
-      .avatar { width: 72px; height: 72px; font-size: 26px; }
-      .profile-card { padding: 8px 12px; margin-bottom: 6px; border-radius: 10px; }
-      .info-row { padding: 4px 0; }
-      .crop-area { width: 200px; height: 200px; }
-      .crop-controls { width: 200px; }
+      .avatar-section { padding: 20px 0 16px; }
+      .avatar { width: 76px; height: 76px; font-size: 28px; }
+      .avatar-wrap { width: 76px; height: 76px; }
+      .crop-area { width: 220px; height: 220px; }
+      .crop-controls { width: 220px; }
     }
   </style>
 </head>
 
 <body>
-  <div class="profile-container">
-    <div class="top-bar">
-      <a href="index.html" class="back-link" id="backLink">← Back</a>
-      <span style="font-size:11px; color:var(--text-muted);">Account</span>
-    </div>
+  <!-- iOS Nav Bar -->
+  <div class="nav-bar">
+    <a href="index.html" class="nav-back" id="backLink">
+      <svg width="13" height="21" viewBox="0 0 13 21" fill="none">
+        <path d="M11 1.5L1.5 10.5L11 19.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back
+    </a>
+    <span class="nav-title">Profile</span>
+    <span class="nav-spacer"></span>
+  </div>
 
-    <div class="profile-header">
+  <div class="scroll-content">
+    <!-- Avatar + Name -->
+    <div class="avatar-section">
       <div class="avatar-wrap" id="avatarWrap" title="Change profile picture">
         <div class="avatar" id="avatar"></div>
         <div class="avatar-edit">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
           </svg>
         </div>
       </div>
@@ -237,38 +437,49 @@
       <input type="file" id="avatarInput" accept="image/*" style="display:none;">
     </div>
 
-    <div class="profile-card">
-      <h2>Account</h2>
-      <div class="info-row">
-        <span class="info-label">Email</span>
-        <span class="info-value" id="emailValue">—</span>
+    <!-- Account section -->
+    <div class="section-header">Account</div>
+    <div class="ios-card">
+      <div class="ios-row">
+        <span class="ios-row-label">Email</span>
+        <span class="ios-row-value" id="emailValue">&mdash;</span>
       </div>
-      <div class="info-row">
-        <span class="info-label">Member since</span>
-        <span class="info-value" id="joinDate">—</span>
+      <div class="ios-row">
+        <span class="ios-row-label">Member since</span>
+        <span class="ios-row-value" id="joinDate">&mdash;</span>
       </div>
-      <div class="info-row">
-        <span class="info-label">Provider</span>
-        <span class="info-value" id="providerValue">—</span>
+      <div class="ios-row">
+        <span class="ios-row-label">Provider</span>
+        <span class="ios-row-value" id="providerValue">&mdash;</span>
       </div>
     </div>
 
-    <div class="profile-card">
-      <h2>Subscription</h2>
-      <div class="info-row">
-        <span class="info-label">Plan</span>
-        <span class="info-value"><span class="tier-badge tier-free" id="tierBadge">Free</span></span>
+    <!-- Subscription section -->
+    <div class="section-header">Subscription</div>
+    <div class="ios-card">
+      <div class="ios-row">
+        <span class="ios-row-label">Plan</span>
+        <span class="ios-row-value"><span class="tier-badge tier-free" id="tierBadge">Free</span></span>
       </div>
-      <div class="info-row" id="upgradeRow" style="border-bottom:none;">
-        <span class="info-label" style="font-size:12px;">Upgrade for faster results</span>
+      <div class="ios-row" id="upgradeRow">
+        <span class="ios-row-label" style="font-size:14px; color:var(--text-secondary);">Unlock faster results & more features</span>
       </div>
-      <button class="upgrade-btn" id="upgradeBtn">Upgrade to Premium</button>
+      <button class="ios-btn-row" id="upgradeBtn">
+        <span class="ios-btn-text accent">Upgrade to Premium</span>
+      </button>
     </div>
 
-    <button class="signout-btn" id="signoutBtn">Sign Out</button>
-    <div class="profile-footer">Powered by RdotA</div>
+    <!-- Sign Out -->
+    <div class="ios-card" style="margin-top: 24px;">
+      <button class="ios-btn-row" id="signoutBtn">
+        <span class="ios-btn-text destructive">Sign Out</span>
+      </button>
+    </div>
+
+    <div class="app-footer">RdotA v1.0</div>
   </div>
 
+  <!-- Crop Overlay -->
   <div class="crop-overlay" id="cropOverlay">
     <div class="crop-title">Crop Profile Picture</div>
     <div class="crop-area" id="cropArea">
@@ -470,14 +681,14 @@
 
         var statusEl = document.getElementById('avatarStatus');
         statusEl.textContent = 'Saving...';
-        statusEl.style.color = '#8888a0';
+        statusEl.style.color = 'var(--text-secondary)';
 
         var settled = false;
         var fallbackTimer = setTimeout(function() {
           if (!settled) {
             settled = true;
-            statusEl.textContent = 'Saved ✓';
-            statusEl.style.color = '#00cec9';
+            statusEl.textContent = 'Saved';
+            statusEl.style.color = 'var(--green)';
             setTimeout(function() { statusEl.textContent = ''; }, 2000);
           }
         }, 4000);
@@ -491,25 +702,25 @@
             clearTimeout(fallbackTimer);
             if (updateRes && updateRes.error) {
               statusEl.textContent = 'Saved locally';
-              statusEl.style.color = '#f39c12';
+              statusEl.style.color = 'var(--orange)';
             } else {
-              statusEl.textContent = 'Updated!';
-              statusEl.style.color = '#00cec9';
+              statusEl.textContent = 'Updated';
+              statusEl.style.color = 'var(--green)';
             }
             setTimeout(function() { statusEl.textContent = ''; }, 2000);
           }).catch(function() {
             if (settled) return;
             settled = true;
             clearTimeout(fallbackTimer);
-            statusEl.textContent = 'Saved ✓';
-            statusEl.style.color = '#00cec9';
+            statusEl.textContent = 'Saved';
+            statusEl.style.color = 'var(--green)';
             setTimeout(function() { statusEl.textContent = ''; }, 2000);
           });
         } catch(e) {
           settled = true;
           clearTimeout(fallbackTimer);
-          statusEl.textContent = 'Saved ✓';
-          statusEl.style.color = '#00cec9';
+          statusEl.textContent = 'Saved';
+          statusEl.style.color = 'var(--green)';
           setTimeout(function() { statusEl.textContent = ''; }, 2000);
         }
       });
@@ -520,7 +731,6 @@
         localStorage.removeItem('disclaimer_accepted');
         localStorage.removeItem('sains_history');
         localStorage.removeItem('ean13_history');
-        // clear supabase session keys manually in case signOut fails
         Object.keys(localStorage).forEach(function(key) {
           if (key.startsWith('sb-')) localStorage.removeItem(key);
         });
